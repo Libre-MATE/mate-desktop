@@ -43,16 +43,23 @@ G_BEGIN_DECLS
  * The color picker emits the "color_set" signal when the color is set.
  */
 
-#define MATE_TYPE_COLOR_BUTTON             (mate_color_button_get_type ())
-#define MATE_COLOR_BUTTON(obj)             (G_TYPE_CHECK_INSTANCE_CAST ((obj), MATE_TYPE_COLOR_BUTTON, MateColorButton))
-#define MATE_COLOR_BUTTON_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST ((klass), MATE_TYPE_COLOR_BUTTON, MateColorButtonClass))
-#define MATE_IS_COLOR_BUTTON(obj)          (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MATE_TYPE_COLOR_BUTTON))
-#define MATE_IS_COLOR_BUTTON_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), MATE_TYPE_COLOR_BUTTON))
-#define MATE_COLOR_BUTTON_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), MATE_TYPE_COLOR_BUTTON, MateColorButtonClass))
+#define MATE_TYPE_COLOR_BUTTON (mate_color_button_get_type())
+#define MATE_COLOR_BUTTON(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj), MATE_TYPE_COLOR_BUTTON, MateColorButton))
+#define MATE_COLOR_BUTTON_CLASS(klass)                      \
+  (G_TYPE_CHECK_CLASS_CAST((klass), MATE_TYPE_COLOR_BUTTON, \
+                           MateColorButtonClass))
+#define MATE_IS_COLOR_BUTTON(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE((obj), MATE_TYPE_COLOR_BUTTON))
+#define MATE_IS_COLOR_BUTTON_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE((klass), MATE_TYPE_COLOR_BUTTON))
+#define MATE_COLOR_BUTTON_GET_CLASS(obj)                    \
+  (G_TYPE_INSTANCE_GET_CLASS((obj), MATE_TYPE_COLOR_BUTTON, \
+                             MateColorButtonClass))
 
-typedef struct _MateColorButton          MateColorButton;
-typedef struct _MateColorButtonClass     MateColorButtonClass;
-typedef struct _MateColorButtonPrivate   MateColorButtonPrivate;
+typedef struct _MateColorButton MateColorButton;
+typedef struct _MateColorButtonClass MateColorButtonClass;
+typedef struct _MateColorButtonPrivate MateColorButtonPrivate;
 
 struct _MateColorButton {
   GtkButton button;
@@ -65,36 +72,34 @@ struct _MateColorButton {
 struct _MateColorButtonClass {
   GtkButtonClass parent_class;
 
-  void (* color_set) (MateColorButton *cp);
+  void (*color_set)(MateColorButton *cp);
 
   /* Padding for future expansion */
-  void (*_gtk_reserved1) (void);
-  void (*_gtk_reserved2) (void);
-  void (*_gtk_reserved3) (void);
-  void (*_gtk_reserved4) (void);
+  void (*_gtk_reserved1)(void);
+  void (*_gtk_reserved2)(void);
+  void (*_gtk_reserved3)(void);
+  void (*_gtk_reserved4)(void);
 };
 
-GType      mate_color_button_get_type       (void) G_GNUC_CONST;
-GtkWidget *mate_color_button_new            (void);
-GtkWidget *mate_color_button_new_with_color (const GdkColor *color);
-void       mate_color_button_set_color      (MateColorButton *color_button,
-					    const GdkColor *color);
-void       mate_color_button_set_rgba       (MateColorButton *color_button,
-					     const GdkRGBA   *color);
-void       mate_color_button_set_alpha      (MateColorButton *color_button,
-					    guint16         alpha);
-void       mate_color_button_get_color      (MateColorButton *color_button,
-					    GdkColor       *color);
-void       mate_color_button_get_rgba       (MateColorButton *color_button,
-					     GdkRGBA         *color);
-guint16    mate_color_button_get_alpha      (MateColorButton *color_button);
-void       mate_color_button_set_use_alpha  (MateColorButton *color_button,
-					    gboolean        use_alpha);
-gboolean   mate_color_button_get_use_alpha  (MateColorButton *color_button);
-void       mate_color_button_set_title      (MateColorButton *color_button,
-					    const gchar    *title);
-const gchar *mate_color_button_get_title (MateColorButton *color_button);
+GType mate_color_button_get_type(void) G_GNUC_CONST;
+GtkWidget *mate_color_button_new(void);
+GtkWidget *mate_color_button_new_with_color(const GdkColor *color);
+void mate_color_button_set_color(MateColorButton *color_button,
+                                 const GdkColor *color);
+void mate_color_button_set_rgba(MateColorButton *color_button,
+                                const GdkRGBA *color);
+void mate_color_button_set_alpha(MateColorButton *color_button, guint16 alpha);
+void mate_color_button_get_color(MateColorButton *color_button,
+                                 GdkColor *color);
+void mate_color_button_get_rgba(MateColorButton *color_button, GdkRGBA *color);
+guint16 mate_color_button_get_alpha(MateColorButton *color_button);
+void mate_color_button_set_use_alpha(MateColorButton *color_button,
+                                     gboolean use_alpha);
+gboolean mate_color_button_get_use_alpha(MateColorButton *color_button);
+void mate_color_button_set_title(MateColorButton *color_button,
+                                 const gchar *title);
+const gchar *mate_color_button_get_title(MateColorButton *color_button);
 
 G_END_DECLS
 
-#endif  /* __MATE_COLOR_BUTTON_H__ */
+#endif /* __MATE_COLOR_BUTTON_H__ */

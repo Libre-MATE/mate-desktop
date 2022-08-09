@@ -1,4 +1,5 @@
-/* -*- Mode: C; c-set-style: linux indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
+/* -*- Mode: C; c-set-style: linux indent-tabs-mode: t; c-basic-offset: 8;
+ * tab-width: 8 -*- */
 /* mate-ditem.h - Utilities for the MATE Desktop
 
    Copyright (C) 1998 Tom Tromey
@@ -31,27 +32,26 @@
 #error    mate-desktop-utils is unstable API. You must define MATE_DESKTOP_USE_UNSTABLE_API before including mate-desktop-utils.h
 #endif
 
-#include <glib.h>
 #include <gdk/gdk.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
 /* prepend the terminal command to a vector */
-void mate_desktop_prepend_terminal_to_vector (int *argc, char ***argv);
+void mate_desktop_prepend_terminal_to_vector(int *argc, char ***argv);
 
 /* replace gdk_spawn_command_line_on_screen, not available in GTK3 */
-gboolean mate_gdk_spawn_command_line_on_screen (GdkScreen *screen, const gchar *command, GError **error);
+gboolean mate_gdk_spawn_command_line_on_screen(GdkScreen *screen,
+                                               const gchar *command,
+                                               GError **error);
 
-void
-mate_desktop_gtk_style_get_light_color (GtkStyleContext *style,
-                                        GtkStateFlags    state,
-                                        GdkRGBA         *color);
+void mate_desktop_gtk_style_get_light_color(GtkStyleContext *style,
+                                            GtkStateFlags state,
+                                            GdkRGBA *color);
 
-void
-mate_desktop_gtk_style_get_dark_color (GtkStyleContext *style,
-                                       GtkStateFlags    state,
-                                       GdkRGBA         *color);
+void mate_desktop_gtk_style_get_dark_color(GtkStyleContext *style,
+                                           GtkStateFlags state, GdkRGBA *color);
 
 G_END_DECLS
 

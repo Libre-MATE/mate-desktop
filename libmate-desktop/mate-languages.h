@@ -31,22 +31,17 @@
 
 G_BEGIN_DECLS
 
-char *        mate_get_language_from_locale    (const char *locale,
-                                                 const char *translation);
-char *        mate_get_country_from_locale     (const char *locale,
-                                                 const char *translation);
-char **       mate_get_all_locales             (void);
-gboolean      mate_parse_locale                (const char *locale,
-                                                 char      **language_codep,
-                                                 char      **country_codep,
-                                                 char      **codesetp,
-                                                 char      **modifierp);
-char *        mate_normalize_locale            (const char *locale);
-gboolean      mate_language_has_translations   (const char *code);
-char *        mate_get_language_from_code      (const char *code,
-                                                 const char *translation);
-char *        mate_get_country_from_code       (const char *code,
-                                                 const char *translation);
+char *mate_get_language_from_locale(const char *locale,
+                                    const char *translation);
+char *mate_get_country_from_locale(const char *locale, const char *translation);
+char **mate_get_all_locales(void);
+gboolean mate_parse_locale(const char *locale, char **language_codep,
+                           char **country_codep, char **codesetp,
+                           char **modifierp);
+char *mate_normalize_locale(const char *locale);
+gboolean mate_language_has_translations(const char *code);
+char *mate_get_language_from_code(const char *code, const char *translation);
+char *mate_get_country_from_code(const char *code, const char *translation);
 
 G_END_DECLS
 

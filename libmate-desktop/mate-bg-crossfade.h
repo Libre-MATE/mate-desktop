@@ -29,51 +29,54 @@
 #error    MateBGCrossfade is unstable API. You must define MATE_DESKTOP_USE_UNSTABLE_API before including mate-bg-crossfade.h
 #endif
 
-#include <glib.h>
 #include <gdk/gdk.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
-#define MATE_TYPE_BG_CROSSFADE            (mate_bg_crossfade_get_type ())
-#define MATE_BG_CROSSFADE(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MATE_TYPE_BG_CROSSFADE, MateBGCrossfade))
-#define MATE_BG_CROSSFADE_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  MATE_TYPE_BG_CROSSFADE, MateBGCrossfadeClass))
-#define MATE_IS_BG_CROSSFADE(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MATE_TYPE_BG_CROSSFADE))
-#define MATE_IS_BG_CROSSFADE_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  MATE_TYPE_BG_CROSSFADE))
-#define MATE_BG_CROSSFADE_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  MATE_TYPE_BG_CROSSFADE, MateBGCrossfadeClass))
+#define MATE_TYPE_BG_CROSSFADE (mate_bg_crossfade_get_type())
+#define MATE_BG_CROSSFADE(obj) \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj), MATE_TYPE_BG_CROSSFADE, MateBGCrossfade))
+#define MATE_BG_CROSSFADE_CLASS(klass)                      \
+  (G_TYPE_CHECK_CLASS_CAST((klass), MATE_TYPE_BG_CROSSFADE, \
+                           MateBGCrossfadeClass))
+#define MATE_IS_BG_CROSSFADE(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE((obj), MATE_TYPE_BG_CROSSFADE))
+#define MATE_IS_BG_CROSSFADE_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE((klass), MATE_TYPE_BG_CROSSFADE))
+#define MATE_BG_CROSSFADE_GET_CLASS(obj)                    \
+  (G_TYPE_INSTANCE_GET_CLASS((obj), MATE_TYPE_BG_CROSSFADE, \
+                             MateBGCrossfadeClass))
 
 typedef struct _MateBGCrossfadePrivate MateBGCrossfadePrivate;
 typedef struct _MateBGCrossfade MateBGCrossfade;
 typedef struct _MateBGCrossfadeClass MateBGCrossfadeClass;
 
-struct _MateBGCrossfade
-{
-    GObject parent_object;
+struct _MateBGCrossfade {
+  GObject parent_object;
 
-    MateBGCrossfadePrivate *priv;
+  MateBGCrossfadePrivate *priv;
 };
 
-struct _MateBGCrossfadeClass
-{
-    GObjectClass parent_class;
+struct _MateBGCrossfadeClass {
+  GObjectClass parent_class;
 
-    void (* finished) (MateBGCrossfade *fade, GdkWindow *window);
+  void (*finished)(MateBGCrossfade *fade, GdkWindow *window);
 };
 
-GType             mate_bg_crossfade_get_type (void);
-MateBGCrossfade   *mate_bg_crossfade_new (int width, int height);
+GType mate_bg_crossfade_get_type(void);
+MateBGCrossfade *mate_bg_crossfade_new(int width, int height);
 
-gboolean          mate_bg_crossfade_set_start_surface (MateBGCrossfade *fade,
-                                                       cairo_surface_t *surface);
-gboolean          mate_bg_crossfade_set_end_surface (MateBGCrossfade *fade,
-                                                     cairo_surface_t *surface);
+gboolean mate_bg_crossfade_set_start_surface(MateBGCrossfade *fade,
+                                             cairo_surface_t *surface);
+gboolean mate_bg_crossfade_set_end_surface(MateBGCrossfade *fade,
+                                           cairo_surface_t *surface);
 
-void              mate_bg_crossfade_start (MateBGCrossfade *fade,
-                                           GdkWindow        *window);
-void              mate_bg_crossfade_start_widget (MateBGCrossfade *fade,
-                                                  GtkWidget       *widget);
-gboolean          mate_bg_crossfade_is_started (MateBGCrossfade *fade);
-void              mate_bg_crossfade_stop (MateBGCrossfade *fade);
+void mate_bg_crossfade_start(MateBGCrossfade *fade, GdkWindow *window);
+void mate_bg_crossfade_start_widget(MateBGCrossfade *fade, GtkWidget *widget);
+gboolean mate_bg_crossfade_is_started(MateBGCrossfade *fade);
+void mate_bg_crossfade_stop(MateBGCrossfade *fade);
 
 G_END_DECLS
 

@@ -34,11 +34,9 @@
 
 G_BEGIN_DECLS
 
-#define MATE_DESKTOP_CHECK_VERSION(major,minor,micro) \
-        (MATE_MAJOR > (major) || \
-        (MATE_MAJOR == (major) && MATE_MINOR > (minor)) || \
-        (MATE_MAJOR == (major) && MATE_MINOR == (minor) && \
-        MATE_MICRO >= (micro)))
+#define MATE_DESKTOP_CHECK_VERSION(major, minor, micro)                       \
+  (MATE_MAJOR > (major) || (MATE_MAJOR == (major) && MATE_MINOR > (minor)) || \
+   (MATE_MAJOR == (major) && MATE_MINOR == (minor) && MATE_MICRO >= (micro)))
 
 G_END_DECLS
 

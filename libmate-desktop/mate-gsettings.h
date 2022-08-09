@@ -26,25 +26,23 @@
 #ifndef __MATE_GSETTINGS_H__
 #define __MATE_GSETTINGS_H__
 
-#include <glib.h>
 #include <gio/gio.h>
+#include <glib.h>
 
 G_BEGIN_DECLS
 
-gboolean mate_gsettings_schema_exists (const gchar* schema);
+gboolean mate_gsettings_schema_exists(const gchar *schema);
 
-gboolean mate_gsettings_is_valid_keyname (const gchar  *key,
-                                          GError      **error);
+gboolean mate_gsettings_is_valid_keyname(const gchar *key, GError **error);
 
-gboolean mate_gsettings_append_strv (GSettings         *settings,
-                                     const gchar       *key,
-                                     const gchar       *value);
+gboolean mate_gsettings_append_strv(GSettings *settings, const gchar *key,
+                                    const gchar *value);
 
-gboolean mate_gsettings_remove_all_from_strv (GSettings         *settings,
-                                              const gchar       *key,
-                                              const gchar       *value);
+gboolean mate_gsettings_remove_all_from_strv(GSettings *settings,
+                                             const gchar *key,
+                                             const gchar *value);
 
-GSList*  mate_gsettings_strv_to_gslist (const gchar *const *array);
+GSList *mate_gsettings_strv_to_gslist(const gchar *const *array);
 
 G_END_DECLS
 

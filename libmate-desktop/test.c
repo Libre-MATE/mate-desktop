@@ -23,36 +23,37 @@
  *  Stefano Karapetsas <stefano@karapetsas.com>
  */
 
+#ifdef HAVE_CONFIG_H
 #include <config.h>
-#include "mate-desktop.h"
+#endif
+
 #include "mate-colorbutton.h"
+#include "mate-desktop.h"
 
-int
-main (int argc, char **argv)
-{
-    GtkWindow *window = NULL;
-    GtkWidget *widget = NULL;
+int main(int argc, char **argv) {
+  GtkWindow *window = NULL;
+  GtkWidget *widget = NULL;
 
-    /* initialize GTK+ */
-    gtk_init (&argc, &argv);
+  /* initialize GTK+ */
+  gtk_init(&argc, &argv);
 
-    /* create window */
-    window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+  /* create window */
+  window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_TOPLEVEL));
 
-    gtk_window_set_title (window, "MATE Desktop Test");
+  gtk_window_set_title(window, "MATE Desktop Test");
 
-    /* create a MateColorButton */
-    widget = mate_color_button_new ();
+  /* create a MateColorButton */
+  widget = mate_color_button_new();
 
-    /* add MateColorButton to window */
-    gtk_container_add (GTK_CONTAINER (window), widget);
+  /* add MateColorButton to window */
+  gtk_container_add(GTK_CONTAINER(window), widget);
 
-    /* quit signal */
-    g_signal_connect (GTK_WIDGET (window), "destroy", gtk_main_quit, NULL);
+  /* quit signal */
+  g_signal_connect(GTK_WIDGET(window), "destroy", gtk_main_quit, NULL);
 
-    gtk_widget_show_all (GTK_WIDGET (window));
+  gtk_widget_show_all(GTK_WIDGET(window));
 
-    /* start application */
-    gtk_main ();
-    return 0;
+  /* start application */
+  gtk_main();
+  return 0;
 }

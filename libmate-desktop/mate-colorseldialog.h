@@ -32,18 +32,26 @@
 
 G_BEGIN_DECLS
 
-#define MATE_TYPE_COLOR_SELECTION_DIALOG            (mate_color_selection_dialog_get_type ())
-#define MATE_COLOR_SELECTION_DIALOG(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), MATE_TYPE_COLOR_SELECTION_DIALOG, MateColorSelectionDialog))
-#define MATE_COLOR_SELECTION_DIALOG_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), MATE_TYPE_COLOR_SELECTION_DIALOG, MateColorSelectionDialogClass))
-#define MATE_IS_COLOR_SELECTION_DIALOG(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), MATE_TYPE_COLOR_SELECTION_DIALOG))
-#define MATE_IS_COLOR_SELECTION_DIALOG_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), MATE_TYPE_COLOR_SELECTION_DIALOG))
-#define MATE_COLOR_SELECTION_DIALOG_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj), MATE_TYPE_COLOR_SELECTION_DIALOG, MateColorSelectionDialogClass))
+#define MATE_TYPE_COLOR_SELECTION_DIALOG \
+  (mate_color_selection_dialog_get_type())
+#define MATE_COLOR_SELECTION_DIALOG(obj)                               \
+  (G_TYPE_CHECK_INSTANCE_CAST((obj), MATE_TYPE_COLOR_SELECTION_DIALOG, \
+                              MateColorSelectionDialog))
+#define MATE_COLOR_SELECTION_DIALOG_CLASS(klass)                      \
+  (G_TYPE_CHECK_CLASS_CAST((klass), MATE_TYPE_COLOR_SELECTION_DIALOG, \
+                           MateColorSelectionDialogClass))
+#define MATE_IS_COLOR_SELECTION_DIALOG(obj) \
+  (G_TYPE_CHECK_INSTANCE_TYPE((obj), MATE_TYPE_COLOR_SELECTION_DIALOG))
+#define MATE_IS_COLOR_SELECTION_DIALOG_CLASS(klass) \
+  (G_TYPE_CHECK_CLASS_TYPE((klass), MATE_TYPE_COLOR_SELECTION_DIALOG))
+#define MATE_COLOR_SELECTION_DIALOG_GET_CLASS(obj)                    \
+  (G_TYPE_INSTANCE_GET_CLASS((obj), MATE_TYPE_COLOR_SELECTION_DIALOG, \
+                             MateColorSelectionDialogClass))
 
-typedef struct _MateColorSelectionDialog       MateColorSelectionDialog;
-typedef struct _MateColorSelectionDialogClass  MateColorSelectionDialogClass;
+typedef struct _MateColorSelectionDialog MateColorSelectionDialog;
+typedef struct _MateColorSelectionDialogClass MateColorSelectionDialogClass;
 
-struct _MateColorSelectionDialog
-{
+struct _MateColorSelectionDialog {
   GtkDialog parent_instance;
 
   GtkWidget *colorsel;
@@ -52,21 +60,21 @@ struct _MateColorSelectionDialog
   GtkWidget *help_button;
 };
 
-struct _MateColorSelectionDialogClass
-{
+struct _MateColorSelectionDialogClass {
   GtkDialogClass parent_class;
 
   /* Padding for future expansion */
-  void (*_gtk_reserved1) (void);
-  void (*_gtk_reserved2) (void);
-  void (*_gtk_reserved3) (void);
-  void (*_gtk_reserved4) (void);
+  void (*_gtk_reserved1)(void);
+  void (*_gtk_reserved2)(void);
+  void (*_gtk_reserved3)(void);
+  void (*_gtk_reserved4)(void);
 };
 
 /* ColorSelectionDialog */
-GType      mate_color_selection_dialog_get_type            (void) G_GNUC_CONST;
-GtkWidget* mate_color_selection_dialog_new                 (const gchar *title);
-GtkWidget* mate_color_selection_dialog_get_color_selection (MateColorSelectionDialog *colorsel);
+GType mate_color_selection_dialog_get_type(void) G_GNUC_CONST;
+GtkWidget *mate_color_selection_dialog_new(const gchar *title);
+GtkWidget *mate_color_selection_dialog_get_color_selection(
+    MateColorSelectionDialog *colorsel);
 
 G_END_DECLS
 

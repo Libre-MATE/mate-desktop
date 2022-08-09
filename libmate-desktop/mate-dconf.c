@@ -29,17 +29,12 @@
 #include <config.h>
 #endif
 
-#include <string.h>
-
 #include <dconf.h>
+#include <string.h>
 
 #include "mate-dconf.h"
 
-static DConfClient *
-mate_dconf_client_get (void)
-{
-    return dconf_client_new ();
-}
+static DConfClient *mate_dconf_client_get(void) { return dconf_client_new(); }
 
 /**
  * mate_dconf_write_sync:
@@ -51,19 +46,16 @@ mate_dconf_client_get (void)
  *
  * Since: 1.7.1
  */
-gboolean
-mate_dconf_write_sync (const gchar  *key,
-                       GVariant     *value,
-                       GError      **error)
-{
-    gboolean     ret;
-    DConfClient *client = mate_dconf_client_get ();
+gboolean mate_dconf_write_sync(const gchar *key, GVariant *value,
+                               GError **error) {
+  gboolean ret;
+  DConfClient *client = mate_dconf_client_get();
 
-    ret = dconf_client_write_sync (client, key, value, NULL, NULL, error);
+  ret = dconf_client_write_sync(client, key, value, NULL, NULL, error);
 
-    g_object_unref (client);
+  g_object_unref(client);
 
-    return ret;
+  return ret;
 }
 
 /**
@@ -75,18 +67,15 @@ mate_dconf_write_sync (const gchar  *key,
  *
  * Since: 1.7.1
  */
-gboolean
-mate_dconf_recursive_reset (const gchar  *dir,
-                            GError      **error)
-{
-    gboolean     ret;
-    DConfClient *client = mate_dconf_client_get ();
+gboolean mate_dconf_recursive_reset(const gchar *dir, GError **error) {
+  gboolean ret;
+  DConfClient *client = mate_dconf_client_get();
 
-    ret = dconf_client_write_sync (client, dir, NULL, NULL, NULL, error);
+  ret = dconf_client_write_sync(client, dir, NULL, NULL, NULL, error);
 
-    g_object_unref (client);
+  g_object_unref(client);
 
-    return ret;
+  return ret;
 }
 
 /**
@@ -101,36 +90,33 @@ mate_dconf_recursive_reset (const gchar  *dir,
  *
  * Since: 1.7.1
  */
-gchar **
-mate_dconf_list_subdirs (const gchar *dir,
-                         gboolean     remove_trailing_slash)
-{
-    GArray       *array;
-    gchar       **children;
-    int       len;
-    int       i;
-    DConfClient  *client = mate_dconf_client_get ();
+gchar **mate_dconf_list_subdirs(const gchar *dir,
+                                gboolean remove_trailing_slash) {
+  GArray *array;
+  gchar **children;
+  int len;
+  int i;
+  DConfClient *client = mate_dconf_client_get();
 
-    array = g_array_new (TRUE, TRUE, sizeof (gchar *));
+  array = g_array_new(TRUE, TRUE, sizeof(gchar *));
 
-    children = dconf_client_list (client, dir, &len);
+  children = dconf_client_list(client, dir, &len);
 
-    g_object_unref (client);
+  g_object_unref(client);
 
-    for (i = 0; children[i] != NULL; i++) {
-        if (dconf_is_rel_dir (children[i], NULL)) {
-            char *val = g_strdup (children[i]);
+  for (i = 0; children[i] != NULL; i++) {
+    if (dconf_is_rel_dir(children[i], NULL)) {
+      char *val = g_strdup(children[i]);
 
-            if (remove_trailing_slash)
-                val[strlen (val) - 1] = '\0';
+      if (remove_trailing_slash) val[strlen(val) - 1] = '\0';
 
-            array = g_array_append_val (array, val);
-        }
+      array = g_array_append_val(array, val);
     }
+  }
 
-    g_strfreev (children);
+  g_strfreev(children);
 
-    return (gchar **) g_array_free (array, FALSE);
+  return (gchar **)g_array_free(array, FALSE);
 }
 
 /**
@@ -140,9 +126,8 @@ mate_dconf_list_subdirs (const gchar *dir,
  *
  * Since: 1.7.1
  */
-void mate_dconf_sync (void)
-{
-    DConfClient  *client = mate_dconf_client_get ();
-    dconf_client_sync (client);
-    g_object_unref (client);
+void mate_dconf_sync(void) {
+  DConfClient *client = mate_dconf_client_get();
+  dconf_client_sync(client);
+  g_object_unref(client);
 }

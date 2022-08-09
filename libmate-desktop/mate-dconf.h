@@ -32,17 +32,15 @@
 
 G_BEGIN_DECLS
 
-gboolean mate_dconf_write_sync (const gchar  *key,
-                                GVariant     *value,
-                                GError      **error);
+gboolean mate_dconf_write_sync(const gchar *key, GVariant *value,
+                               GError **error);
 
-gboolean mate_dconf_recursive_reset (const gchar  *dir,
-                                     GError     **error);
+gboolean mate_dconf_recursive_reset(const gchar *dir, GError **error);
 
-gchar **mate_dconf_list_subdirs (const gchar *dir,
-                                 gboolean     remove_trailing_slash);
+gchar **mate_dconf_list_subdirs(const gchar *dir,
+                                gboolean remove_trailing_slash);
 
-void mate_dconf_sync (void);
+void mate_dconf_sync(void);
 
 G_END_DECLS
 
