@@ -1018,10 +1018,10 @@ gboolean mate_bg_is_dark(MateBG *bg, int width, int height) {
     guchar a, r, g, b;
 
     pixbuf_average_value(pixbuf, &argb);
-    a = argb.alpha * 0xff;
-    r = argb.red * 0xff;
-    g = argb.green * 0xff;
-    b = argb.blue * 0xff;
+    a = (guchar)(argb.alpha * 255.0);
+    r = (guchar)(argb.red * 255.0);
+    g = (guchar)(argb.green * 255.0);
+    b = (guchar)(argb.blue * 255.0);
 
     color.red = (color.red * (0xFF - a) + r * 0x101 * a) / 0xFF;
     color.green = (color.green * (0xFF - a) + g * 0x101 * a) / 0xFF;
@@ -1030,8 +1030,8 @@ gboolean mate_bg_is_dark(MateBG *bg, int width, int height) {
   }
 
   intensity =
-      ((guint)(color.red * 65535) * 77 + (guint)(color.green * 65535) * 150 +
-       (guint)(color.blue * 65535) * 28) >>
+      ((guint)(color.red * 65535.0) * 77 + (guint)(color.green * 65535.0) * 150 +
+       (guint)(color.blue * 65535.0) * 28) >>
       16;
 
   return intensity < 160; /* biased slightly to be dark */

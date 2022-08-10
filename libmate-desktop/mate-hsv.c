@@ -356,12 +356,12 @@ static void compute_triangle(MateHSV *hsv, gint *hx, gint *hy, gint *sx,
   inner = outer - priv->ring_width;
   angle = priv->h * 2.0 * G_PI;
 
-  *hx = floor(center_x + cos(angle) * inner + 0.5);
-  *hy = floor(center_y - sin(angle) * inner + 0.5);
-  *sx = floor(center_x + cos(angle + 2.0 * G_PI / 3.0) * inner + 0.5);
-  *sy = floor(center_y - sin(angle + 2.0 * G_PI / 3.0) * inner + 0.5);
-  *vx = floor(center_x + cos(angle + 4.0 * G_PI / 3.0) * inner + 0.5);
-  *vy = floor(center_y - sin(angle + 4.0 * G_PI / 3.0) * inner + 0.5);
+  *hx = (gint)(center_x + cos(angle) * inner);
+  *hy = (gint)(center_y - sin(angle) * inner);
+  *sx = (gint)(center_x + cos(angle + 2.0 * G_PI / 3.0) * inner);
+  *sy = (gint)(center_y - sin(angle + 2.0 * G_PI / 3.0) * inner);
+  *vx = (gint)(center_x + cos(angle + 4.0 * G_PI / 3.0) * inner);
+  *vy = (gint)(center_y - sin(angle + 4.0 * G_PI / 3.0) * inner);
 }
 
 /* Computes whether a point is inside the hue ring */
@@ -727,9 +727,9 @@ static void get_color(gdouble h, gdouble s, gdouble v, gint *r, gint *g,
                       gint *b) {
   hsv_to_rgb(&h, &s, &v);
 
-  *r = floor(h * 255 + 0.5);
-  *g = floor(s * 255 + 0.5);
-  *b = floor(v * 255 + 0.5);
+  *r = (gint)(h * 255.0);
+  *g = (gint)(s * 255.0);
+  *b = (gint)(v * 255.0);
 }
 
 #define SWAP(a, b, t) ((t) = (a), (a) = (b), (b) = (t))
@@ -883,8 +883,8 @@ static void paint_triangle(MateHSV *hsv, cairo_t *cr, gboolean draw_focus) {
 
   /* Draw value marker */
 
-  xx = floor(sx + (vx - sx) * priv->v + (hx - vx) * priv->s * priv->v + 0.5);
-  yy = floor(sy + (vy - sy) * priv->v + (hy - vy) * priv->s * priv->v + 0.5);
+  xx = (gint)(sx + (vx - sx) * priv->v + (hx - vx) * priv->s * priv->v);
+  yy = (gint)(sy + (vy - sy) * priv->v + (hy - vy) * priv->s * priv->v);
 
   r = priv->h;
   g = priv->s;
@@ -1149,8 +1149,8 @@ static void mate_hsv_move(MateHSV *hsv, GtkDirectionType dir) {
 
   compute_triangle(hsv, &hx, &hy, &sx, &sy, &vx, &vy);
 
-  x = floor(sx + (vx - sx) * priv->v + (hx - vx) * priv->s * priv->v + 0.5);
-  y = floor(sy + (vy - sy) * priv->v + (hy - vy) * priv->s * priv->v + 0.5);
+  x = (gint)(sx + (vx - sx) * priv->v + (hx - vx) * priv->s * priv->v);
+  y = (gint)(sy + (vy - sy) * priv->v + (hy - vy) * priv->s * priv->v);
 
 #define HUE_DELTA 0.002
   switch (dir) {

@@ -1384,12 +1384,12 @@ static gboolean startup_timeout(void *data) {
               1000.0;
 #endif
 
-    if (elapsed >= STARTUP_TIMEOUT_LENGTH) {
+    if ((int)elapsed >= STARTUP_TIMEOUT_LENGTH) {
       std->contexts = g_slist_remove(std->contexts, sn_context);
       sn_launcher_context_complete(sn_context);
       sn_launcher_context_unref(sn_context);
     } else {
-      min_timeout = MIN(min_timeout, (STARTUP_TIMEOUT_LENGTH - elapsed));
+      min_timeout = MIN(min_timeout, (STARTUP_TIMEOUT_LENGTH - (int)elapsed));
     }
 
     tmp = next;
