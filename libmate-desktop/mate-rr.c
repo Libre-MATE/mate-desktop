@@ -510,74 +510,7 @@ static GdkFilterReturn screen_on_event(GdkXEvent *xevent, GdkEvent *event,
      * why it sent us an event!
      */
     screen_update(screen, TRUE, FALSE, NULL); /* NULL-GError */
-#if 0
-	/* Enable this code to get a dialog showing the RANDR timestamps, for debugging purposes */
-	{
-	    GtkWidget *dialog;
-	    XRRScreenChangeNotifyEvent *rr_event;
-	    static int dialog_num;
-
-	    rr_event = (XRRScreenChangeNotifyEvent *) e;
-
-	    dialog = gtk_message_dialog_new (NULL,
-					     0,
-					     GTK_MESSAGE_INFO,
-					     GTK_BUTTONS_CLOSE,
-					     "RRScreenChangeNotify timestamps (%d):\n"
-					     "event change: %u\n"
-					     "event config: %u\n"
-					     "event serial: %lu\n"
-					     "----------------------"
-					     "screen change: %u\n"
-					     "screen config: %u\n",
-					     dialog_num++,
-					     (guint32) rr_event->timestamp,
-					     (guint32) rr_event->config_timestamp,
-					     rr_event->serial,
-					     (guint32) priv->info->resources->timestamp,
-					     (guint32) priv->info->resources->configTimestamp);
-	    g_signal_connect (dialog, "response",
-			      G_CALLBACK (gtk_widget_destroy), NULL);
-	    gtk_widget_show (dialog);
-	}
-#endif
   }
-#if 0
-    /* WHY THIS CODE IS DISABLED:
-     *
-     * Note that in mate_rr_screen_new(), we only select for
-     * RRScreenChangeNotifyMask.  We used to select for other values in
-     * RR*NotifyMask, but we weren't really doing anything useful with those
-     * events.  We only care about "the screens changed in some way or another"
-     * for now.
-     *
-     * If we ever run into a situtation that could benefit from processing more
-     * detailed events, we can enable this code again.
-     *
-     * Note that the X server sends RRScreenChangeNotify in conjunction with the
-     * more detailed events from RANDR 1.2 - see xserver/randr/randr.c:TellChanged().
-     */
-    else if (event_num == RRNotify)
-    {
-	/* Other RandR events */
-
-	XRRNotifyEvent *event = (XRRNotifyEvent *)e;
-
-	/* Here we can distinguish between RRNotify events supported
-	 * since RandR 1.2 such as RRNotify_OutputProperty.  For now, we
-	 * don't have anything special to do for particular subevent types, so
-	 * we leave this as an empty switch().
-	 */
-	switch (event->subtype)
-	{
-	default:
-	    break;
-	}
-
-	/* No need to reprobe hardware here */
-	screen_update (screen, TRUE, FALSE, NULL); /* NULL-GError */
-    }
-#endif
 
 #endif /* HAVE_RANDR */
 
@@ -1085,10 +1018,6 @@ static gboolean output_initialize(MateRROutput *output, XRRScreenResources *res,
   XRROutputInfo *info = XRRGetOutputInfo(DISPLAY(output), res, output->id);
   GPtrArray *a;
   int i;
-
-#if 0
-    g_print ("Output %lx Timestamp: %u\n", output->id, (guint32)info->timestamp);
-#endif
 
   if (!info || !output->info) {
     /* FIXME: see the comment in crtc_initialize() */
@@ -1642,10 +1571,6 @@ static gboolean crtc_initialize(MateRRCrtc *crtc, XRRScreenResources *res,
   XRRCrtcInfo *info = XRRGetCrtcInfo(DISPLAY(crtc), res, crtc->id);
   GPtrArray *a;
   int i;
-
-#if 0
-    g_print ("CRTC %lx Timestamp: %u\n", crtc->id, (guint32)info->timestamp);
-#endif
 
   if (!info) {
     /* FIXME: We need to reaquire the screen resources */

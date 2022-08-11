@@ -100,13 +100,6 @@ static void launch_item(const char *file) {
     return;
   }
 
-#if 0
-	file_list = g_list_append (NULL, "file:///bin/sh");
-	file_list = g_list_append (file_list, "foo");
-	file_list = g_list_append (file_list, "bar");
-	file_list = g_list_append (file_list, "http://slashdot.org");
-#endif
-
   ret = mate_desktop_item_launch(ditem, file_list, 0, NULL);
   g_print("launch returned: %d\n", ret);
 }
