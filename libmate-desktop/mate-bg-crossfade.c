@@ -281,7 +281,6 @@ gboolean mate_bg_crossfade_set_start_surface(MateBGCrossfade *fade,
   return fade->priv->start_surface != NULL;
 }
 
-#if GLIB_CHECK_VERSION(2, 61, 2)
 static gdouble get_current_time(void) {
   const double microseconds_per_second = (double)G_USEC_PER_SEC;
   gint64 tv;
@@ -290,20 +289,6 @@ static gdouble get_current_time(void) {
 
   return (double)(tv / microseconds_per_second);
 }
-#else
-static gdouble get_current_time(void) {
-  const double microseconds_per_second = (double)G_USEC_PER_SEC;
-  double timestamp;
-  GTimeVal now;
-
-  g_get_current_time(&now);
-
-  timestamp = ((microseconds_per_second * now.tv_sec) + now.tv_usec) /
-              microseconds_per_second;
-
-  return timestamp;
-}
-#endif
 
 /**
  * mate_bg_crossfade_set_end_surface:

@@ -1349,24 +1349,14 @@ static void free_startup_timeout(void *data) {
 static gboolean startup_timeout(void *data) {
   StartupTimeoutData *std = data;
   GSList *tmp;
-  int min_timeout;
-
-  min_timeout = STARTUP_TIMEOUT_LENGTH;
-
-#if GLIB_CHECK_VERSION(2, 61, 2)
+  int min_timeout = STARTUP_TIMEOUT_LENGTH;
   gint64 now = g_get_real_time();
-#else
-  GTimeVal now;
-  g_get_current_time(&now);
-#endif
 
   tmp = std->contexts;
   while (tmp != NULL) {
     SnLauncherContext *sn_context = tmp->data;
     GSList *next = tmp->next;
     double elapsed;
-
-#if GLIB_CHECK_VERSION(2, 61, 2)
     time_t tv_sec;
     suseconds_t tv_usec;
     gint64 tv;
@@ -1374,15 +1364,6 @@ static gboolean startup_timeout(void *data) {
     sn_launcher_context_get_last_active_time(sn_context, &tv_sec, &tv_usec);
     tv = (tv_sec * G_USEC_PER_SEC) + tv_usec;
     elapsed = (double)(now - tv) / 1000.0;
-#else
-    long tv_sec, tv_usec;
-
-    sn_launcher_context_get_last_active_time(sn_context, &tv_sec, &tv_usec);
-
-    elapsed = ((((double)now.tv_sec - tv_sec) * G_USEC_PER_SEC +
-                (now.tv_usec - tv_usec))) /
-              1000.0;
-#endif
 
     if ((int)elapsed >= STARTUP_TIMEOUT_LENGTH) {
       std->contexts = g_slist_remove(std->contexts, sn_context);

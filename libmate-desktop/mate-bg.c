@@ -1438,7 +1438,6 @@ struct _SlideShow {
   GQueue *stack;
 };
 
-#if GLIB_CHECK_VERSION(2, 61, 2)
 static double now(void) {
   const double microseconds_per_second = (double)G_USEC_PER_SEC;
   gint64 tv;
@@ -1447,16 +1446,6 @@ static double now(void) {
 
   return (double)(tv / microseconds_per_second);
 }
-#else
-static double now(void) {
-  const double microseconds_per_second = (double)G_USEC_PER_SEC;
-  GTimeVal tv;
-
-  g_get_current_time(&tv);
-
-  return (double)tv.tv_sec + (tv.tv_usec / microseconds_per_second);
-}
-#endif
 
 static Slide *get_current_slide(SlideShow *show, double *alpha) {
   double delta = fmod(now() - show->start_time, show->total_duration);
