@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
   gtk_container_add(GTK_CONTAINER(window), widget);
 
   /* quit signal */
-  g_signal_connect(GTK_WIDGET(window), "destroy", gtk_main_quit, NULL);
+  g_signal_connect(window, "destroy", gtk_main_quit, NULL);
 
   gtk_widget_show_all(GTK_WIDGET(window));
 
