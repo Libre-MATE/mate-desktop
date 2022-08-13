@@ -12,10 +12,6 @@ gtk-doc.
 
 The mate-about program helps find which version of MATE is installed.
 
-You may download updates to the package from:
-
-   http://pub.mate-desktop.org/releases/
-
 
 Installation
 ============
@@ -23,12 +19,3 @@ Installation
 If you are not using a released version of mate-desktop (for example,
 if you checked out the code from git), you first need to run
 './autogen.sh'.
-
-
-How to report bugs
-==================
-
-Bugs should be reported to the MATE bug tracking system:
-
-   https://github.com/mate-desktop/mate-desktop/issues
-
