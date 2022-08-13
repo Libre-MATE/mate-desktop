@@ -5,6 +5,7 @@ m4_define([mate_micro], [0])
 m4_define(mate_version, [mate_platform.mate_minor.mate_micro]),
 
 AC_INIT([mate-desktop], mate_version, [https://github.com/Libre-MATE/mate-desktop/])
+AC_COPYRIGHT([Copyright (C) 2022 Libre MATE])
 AC_CONFIG_SRCDIR([libmate-desktop])
 
 AC_CONFIG_AUX_DIR([build-aux])
