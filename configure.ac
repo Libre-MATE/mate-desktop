@@ -25,7 +25,8 @@ AC_INIT([mate-desktop], mate_version, [https://github.com/Libre-MATE/mate-deskto
 AC_COPYRIGHT([Copyright (C) 2022 Libre MATE])
 AC_CONFIG_SRCDIR([libmate-desktop])
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.11 foreign no-dist-gzip dist-xz tar-ustar silent-rules check-news])
+AM_INIT_AUTOMAKE([1.11 foreign no-dist-gzip dist-xz tar-ustar check-news])
+AM_SILENT_RULES([yes])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
