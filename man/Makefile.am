@@ -5,7 +5,6 @@ man_MANS += mate-about.1
 endif
 
 EXTRA_DIST = \
-	meson.build \
 	mate-about.1 \
 	mate-color-select.1
 

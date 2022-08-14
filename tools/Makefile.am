@@ -23,7 +23,6 @@ mate-color-select.desktop: mate-color-select.desktop.in
 	$(AM_V_GEN)$(MSGFMT) --desktop --template $< -d $(top_srcdir)/po -o $@
 
 EXTRA_DIST = \
-	$(desktop_in_files) \
-	meson.build
+	$(desktop_in_files)
 
 CLEANFILES = $(desktop_DATA) $(bin_PROGRAMS)

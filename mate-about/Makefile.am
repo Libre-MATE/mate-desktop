@@ -20,7 +20,6 @@ version_DATA = mate-version.xml
 
 EXTRA_DIST = \
 	$(desktop_in_files) \
-	meson.build \
 	mate-about.h.in \
 	mate-version.xml.in
 

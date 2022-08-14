@@ -16,9 +16,6 @@ nobase_dist_icons_DATA = \
 
 gtk_update_icon_cache = gtk-update-icon-cache -f -t $(datadir)/icons/hicolor
 
-EXTRA_DIST = \
-	meson.build
-
 .PHONY: build-png-icons clean-png-icons
 
 install-data-hook: update-icon-cache

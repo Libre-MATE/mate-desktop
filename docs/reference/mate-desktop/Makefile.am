@@ -75,8 +75,4 @@ include $(top_srcdir)/gtk-doc.make
 
 DISTCLEANFILES = $(DOC_MODULE).actions
 
-# Other files to distribute
-# e.g. EXTRA_DIST += version.xml.in
-EXTRA_DIST += meson.build
-
 -include $(top_srcdir)/git.mk

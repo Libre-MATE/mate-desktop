@@ -12,14 +12,8 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	CFLAGS='-Wno-deprecated-declarations'
 
 EXTRA_DIST = \
-	abi-check \
 	autogen.sh \
-	config.meson.h\
-	COPYING-DOCS \
-	meson.build \
-	meson_options.txt \
-	po/meson.build \
-	utils/post_install.py
+	COPYING-DOCS
 
 CLEANFILES =
 
