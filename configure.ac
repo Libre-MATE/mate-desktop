@@ -24,13 +24,9 @@ m4_define(mate_version, [mate_platform.mate_minor.mate_micro]),
 AC_INIT([mate-desktop], mate_version, [https://github.com/Libre-MATE/mate-desktop/])
 AC_COPYRIGHT([Copyright (C) 2022 Libre MATE])
 AC_CONFIG_SRCDIR([libmate-desktop])
-
 AC_CONFIG_AUX_DIR([build-aux])
-AM_INIT_AUTOMAKE([1.9 foreign no-dist-gzip dist-xz tar-ustar check-news])
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
-
+AM_INIT_AUTOMAKE([1.11 foreign no-dist-gzip dist-xz tar-ustar silent-rules check-news])
 AC_CONFIG_HEADERS([config.h])
-
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
