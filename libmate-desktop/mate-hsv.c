@@ -284,7 +284,7 @@ static void hsv_to_rgb(gdouble *h, gdouble *s, gdouble *v) {
   if (*s == 0.0) {
     *h = *v;
     *s = *v;
-    *v = *v; /* heh */
+ /* *v = *v; */
   } else {
     hue = *h * 6.0;
     saturation = *s;
