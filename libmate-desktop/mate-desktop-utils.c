@@ -124,7 +124,7 @@ void mate_desktop_prepend_terminal_to_vector(int *argc, char ***argv) {
        * as -e in mate-terminal is broken we use that. */
       term_argv[1] = g_strdup("-x");
     } else {
-      if (check == NULL) check = g_find_program_in_path("nxterm");
+      check = g_find_program_in_path("nxterm");
       if (check == NULL) check = g_find_program_in_path("color-xterm");
       if (check == NULL) check = g_find_program_in_path("rxvt");
       if (check == NULL) check = g_find_program_in_path("xterm");
