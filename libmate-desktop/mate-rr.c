@@ -1669,7 +1669,7 @@ static void mode_initialize(MateRRMode *mode, XRRModeInfo *info) {
   mode->width = info->width;
   mode->height = info->height;
   mode->freq =
-      ((info->dotClock / (double)info->hTotal) / info->vTotal + 0.5) * 1000;
+      (int)(((((double)info->dotClock) / (double)info->hTotal) / ((double)info->vTotal) + 0.5) * 1000.0);
 }
 #endif /* HAVE_RANDR */
 

@@ -1795,8 +1795,8 @@ static GdkPixbuf *scale_thumbnail(MateBGPlacement placement,
     double f = thumb_to_orig * screen_to_dest;
     int new_width, new_height;
 
-    new_width = floor(thumb_width * f + 0.5);
-    new_height = floor(thumb_height * f + 0.5);
+    new_width = (int)(f * (double)thumb_width);
+    new_height = (int)(f * (double)thumb_height);
 
     if (placement == MATE_BG_PLACEMENT_TILED) {
       /* Heuristic to make sure tiles don't become so small that
@@ -2134,8 +2134,8 @@ static GdkPixbuf *pixbuf_scale_to_fit(GdkPixbuf *src, int max_width,
 
   factor = MIN(max_width / (double)src_width, max_height / (double)src_height);
 
-  new_width = floor(src_width * factor + 0.5);
-  new_height = floor(src_height * factor + 0.5);
+  new_width = (int)(factor * (double)src_width);
+  new_height = (int)(factor * (double)src_height);
 
   return gdk_pixbuf_scale_simple(src, new_width, new_height,
                                  GDK_INTERP_BILINEAR);
@@ -2151,10 +2151,11 @@ static GdkPixbuf *pixbuf_scale_to_min(GdkPixbuf *src, int min_width,
   src_width = gdk_pixbuf_get_width(src);
   src_height = gdk_pixbuf_get_height(src);
 
-  factor = MAX(min_width / (double)src_width, min_height / (double)src_height);
+  factor = MAX(((double)min_width) / ((double)src_width),
+               ((double)min_height) / ((double)src_height));
 
-  new_width = floor(src_width * factor + 0.5);
-  new_height = floor(src_height * factor + 0.5);
+  new_width = (int)(factor * (double)src_width);
+  new_height = (int)(factor * (double)src_height);
 
   dest = gdk_pixbuf_new(GDK_COLORSPACE_RGB, gdk_pixbuf_get_has_alpha(src), 8,
                         min_width, min_height);
@@ -2247,11 +2248,9 @@ static void pixbuf_blend(GdkPixbuf *src, GdkPixbuf *dest, int src_x, int src_y,
   int offset_y = dest_y - src_y;
 
   if (src_width < 0) src_width = gdk_pixbuf_get_width(src);
-
   if (src_height < 0) src_height = gdk_pixbuf_get_height(src);
 
   if (dest_x < 0) dest_x = 0;
-
   if (dest_y < 0) dest_y = 0;
 
   if (dest_x + src_width > dest_width) {
@@ -2263,8 +2262,8 @@ static void pixbuf_blend(GdkPixbuf *src, GdkPixbuf *dest, int src_x, int src_y,
   }
 
   gdk_pixbuf_composite(src, dest, dest_x, dest_y, src_width, src_height,
-                       offset_x, offset_y, 1, 1, GDK_INTERP_NEAREST,
-                       alpha * 0xFF + 0.5);
+                       (double)offset_x, (double)offset_y, 1.0, 1.0,
+                       GDK_INTERP_NEAREST, (int)(alpha * 255.0));
 }
 
 static void pixbuf_tile(GdkPixbuf *src, GdkPixbuf *dest) {

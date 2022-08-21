@@ -1469,8 +1469,9 @@ static void shutdown_eyedropper(GtkWidget *widget) {
 
 static void mouse_motion(GtkWidget *invisible, GdkEventMotion *event,
                          gpointer data) {
-  grab_color_at_mouse(gdk_event_get_screen((GdkEvent *)event), event->x_root,
-                      event->y_root, data);
+  grab_color_at_mouse(gdk_event_get_screen((GdkEvent *)event),
+                                           (gint)event->x_root,
+                                           (gint)event->y_root, data);
 }
 
 static gboolean mouse_release(GtkWidget *invisible, GdkEventButton *event,
@@ -1479,8 +1480,8 @@ static gboolean mouse_release(GtkWidget *invisible, GdkEventButton *event,
 
   if (event->button != 1) return FALSE;
 
-  grab_color_at_mouse(gdk_event_get_screen((GdkEvent *)event), event->x_root,
-                      event->y_root, data);
+  grab_color_at_mouse(gdk_event_get_screen((GdkEvent *)event),
+                      (gint)event->x_root, (gint)event->y_root, data);
 
   shutdown_eyedropper(GTK_WIDGET(data));
 

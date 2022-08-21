@@ -1654,8 +1654,8 @@ static gboolean crtc_assignment_apply(CrtcAssignment *assign, guint32 timestamp,
    *
    * Firefox and Evince apparently believe what X tells them.
    */
-  width_mm = (int)(((double)width) / 96.0) * 25.4;
-  height_mm = (int)(((double)height) / 96.0) * 25.4;
+  width_mm = (int)((((double)width) / 96.0) * 25.4);
+  height_mm = (int)((((double)height) / 96.0) * 25.4);
 
   if (success) {
     ConfigureCrtcState state;
