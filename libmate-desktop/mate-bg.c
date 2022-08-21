@@ -1738,10 +1738,10 @@ static double get_slide_timeout(Slide *slide) {
 static void ensure_timeout(MateBG *bg, Slide *slide) {
   if (!bg->timeout_id) {
     double timeout = get_slide_timeout(slide);
-
+    guint interval = (guint) timeout;
     /* G_MAXUINT means "only one slide" */
-    if (timeout < G_MAXUINT) {
-      bg->timeout_id = g_timeout_add_full(G_PRIORITY_LOW, timeout * 1000,
+    if (interval < G_MAXUINT) {
+      bg->timeout_id = g_timeout_add_full(G_PRIORITY_LOW, interval * 1000,
                                           on_timeout, bg, NULL);
     }
   }

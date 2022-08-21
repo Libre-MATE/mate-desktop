@@ -588,7 +588,7 @@ void mate_bg_crossfade_start(MateBGCrossfade *fade, GdkWindow *window) {
   }
   draw_background(fade);
 
-  source = g_timeout_source_new(1000 / 60.0);
+  source = g_timeout_source_new(1000 / 60);
   g_source_set_callback(source, (GSourceFunc)on_tick, fade,
                         (GDestroyNotify)on_finished);
   context = g_main_context_default();
