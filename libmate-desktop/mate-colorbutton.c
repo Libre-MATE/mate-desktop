@@ -570,10 +570,10 @@ void mate_color_button_set_rgba(MateColorButton *color_button,
   g_return_if_fail(MATE_IS_COLOR_BUTTON(color_button));
   g_return_if_fail(color != NULL);
 
-  color_button->priv->color.red = color->red * 65535;
-  color_button->priv->color.green = color->green * 65535;
-  color_button->priv->color.blue = color->blue * 65535;
-  color_button->priv->alpha = color->alpha * 65535;
+  color_button->priv->color.red = (guint16)(color->red * 65535.0);
+  color_button->priv->color.green = (guint16)(color->green * 65535.0);
+  color_button->priv->color.blue = (guint16)(color->blue * 65535.0);
+  color_button->priv->alpha = (guint16)(color->alpha * 65535.0);
 
   gtk_widget_queue_draw(color_button->priv->draw_area);
 
@@ -629,10 +629,10 @@ void mate_color_button_get_color(MateColorButton *color_button,
 void mate_color_button_get_rgba(MateColorButton *color_button, GdkRGBA *color) {
   g_return_if_fail(MATE_IS_COLOR_BUTTON(color_button));
 
-  color->red = color_button->priv->color.red / 65535.;
-  color->green = color_button->priv->color.green / 65535.;
-  color->blue = color_button->priv->color.blue / 65535.;
-  color->alpha = color_button->priv->alpha / 65535.;
+  color->red = ((gdouble)color_button->priv->color.red) / 65535.0;
+  color->green = ((gdouble)color_button->priv->color.green) / 65535.0;
+  color->blue = ((gdouble)color_button->priv->color.blue) / 65535.0;
+  color->alpha = ((gdouble)color_button->priv->alpha) / 65535.0;
 }
 
 /**

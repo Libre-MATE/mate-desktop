@@ -686,10 +686,10 @@ static void color_sample_drop_handle(GtkWidget *widget, GdkDragContext *context,
   vals = (guint16 *)gtk_selection_data_get_data(selection_data);
 
   if (widget == priv->cur_sample) {
-    color[0] = (gdouble)vals[0] / 0xffff;
-    color[1] = (gdouble)vals[1] / 0xffff;
-    color[2] = (gdouble)vals[2] / 0xffff;
-    color[3] = (gdouble)vals[3] / 0xffff;
+    color[0] = ((gdouble)vals[0]) / 65535.0;
+    color[1] = ((gdouble)vals[1]) / 65535.0;
+    color[2] = ((gdouble)vals[2]) / 65535.0;
+    color[3] = ((gdouble)vals[3]) / 65535.0;
 
     set_color_internal(colorsel, color);
   }
@@ -710,10 +710,10 @@ static void color_sample_drag_handle(GtkWidget *widget, GdkDragContext *context,
   else
     colsrc = priv->color;
 
-  vals[0] = colsrc[COLORSEL_RED] * 0xffff;
-  vals[1] = colsrc[COLORSEL_GREEN] * 0xffff;
-  vals[2] = colsrc[COLORSEL_BLUE] * 0xffff;
-  vals[3] = priv->has_opacity ? colsrc[COLORSEL_OPACITY] * 0xffff : 0xffff;
+  vals[0] = (guint16)(colsrc[COLORSEL_RED] * 65535.0);
+  vals[1] = (guint16)(colsrc[COLORSEL_GREEN] * 65535.0);
+  vals[2] = (guint16)(colsrc[COLORSEL_BLUE] * 65535.0);
+  vals[3] = priv->has_opacity ? (guint16)(colsrc[COLORSEL_OPACITY] * 65535.0) : 0xffff;
 
   gtk_selection_data_set(selection_data,
                          gdk_atom_intern_static_string("application/x-color"),
@@ -990,9 +990,9 @@ static void palette_drag_handle(GtkWidget *widget, GdkDragContext *context,
 
   palette_get_color(widget, colsrc);
 
-  vals[0] = colsrc[COLORSEL_RED] * 0xffff;
-  vals[1] = colsrc[COLORSEL_GREEN] * 0xffff;
-  vals[2] = colsrc[COLORSEL_BLUE] * 0xffff;
+  vals[0] = (guint16)(colsrc[COLORSEL_RED] * 65535.0);
+  vals[1] = (guint16)(colsrc[COLORSEL_GREEN] * 65535.0);
+  vals[2] = (guint16)(colsrc[COLORSEL_BLUE] * 65535.0);
   vals[3] = 0xffff;
 
   gtk_selection_data_set(selection_data,
@@ -1296,10 +1296,10 @@ static void palette_drop_handle(GtkWidget *widget, GdkDragContext *context,
 
   vals = (guint16 *)gtk_selection_data_get_data(selection_data);
 
-  color[0] = (gdouble)vals[0] / 0xffff;
-  color[1] = (gdouble)vals[1] / 0xffff;
-  color[2] = (gdouble)vals[2] / 0xffff;
-  color[3] = (gdouble)vals[3] / 0xffff;
+  color[0] = ((gdouble)vals[0]) / 65535.0;
+  color[1] = ((gdouble)vals[1]) / 65535.0;
+  color[2] = ((gdouble)vals[2]) / 65535.0;
+  color[3] = ((gdouble)vals[3]) / 65535.0;
   palette_change_color(widget, colorsel, color);
   set_color_internal(colorsel, color);
 }
