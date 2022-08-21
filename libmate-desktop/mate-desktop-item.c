@@ -1494,9 +1494,9 @@ static int ditem_execute(const MateDesktopItem *item, const char *exec,
                          gboolean use_current_dir, gboolean append_uris,
                          gboolean append_paths, gboolean do_not_reap_child,
                          GError **error) {
+  int ret = 0;
   char **free_me = NULL;
   char **real_argv;
-  int i, ret;
   char **term_argv = NULL;
   int term_argc = 0;
   GSList *vector_list;
@@ -1514,7 +1514,8 @@ static int ditem_execute(const MateDesktopItem *item, const char *exec,
   SnLauncherContext *sn_context;
   SnDisplay *sn_display;
   const char *startup_class;
-#endif
+#endif /* HAVE_STARTUP_NOTIFICATION */
+  int i;
 
   g_return_val_if_fail(item, -1);
 
