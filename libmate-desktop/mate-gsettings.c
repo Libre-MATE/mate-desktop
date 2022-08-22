@@ -111,7 +111,7 @@ gboolean mate_gsettings_append_strv(GSettings *settings, const gchar *key,
                                     const gchar *value) {
   gchar **old;
   gchar **new;
-  gint size;
+  gsize size;
   gboolean retval;
 
   old = g_settings_get_strv(settings, key);

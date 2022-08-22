@@ -647,7 +647,7 @@ static void paint_ring(MateHSV *hsv, cairo_t *cr) {
   /* Create an image initialized with the ring colors */
 
   stride = cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, width);
-  buf = g_new(guint32, height * stride / 4);
+  buf = g_new(guint32, (gsize)(height * stride / 4));
 
   for (yy = 0; yy < height; yy++) {
     p = buf + yy * width;
@@ -808,7 +808,7 @@ static void paint_triangle(MateHSV *hsv, cairo_t *cr, gboolean draw_focus) {
   /* Shade the triangle */
 
   stride = cairo_format_stride_for_width(CAIRO_FORMAT_RGB24, width);
-  buf = g_new(guint32, height * stride / 4);
+  buf = g_new(guint32, (gsize)(height * stride / 4));
 
   for (yy = 0; yy < height; yy++) {
     p = buf + yy * width;

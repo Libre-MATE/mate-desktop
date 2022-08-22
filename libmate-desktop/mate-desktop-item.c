@@ -118,7 +118,7 @@ typedef struct {
   gboolean buf_needs_free;
   gboolean past_first_read;
   gboolean eof;
-  guint64 size;
+  gsize size;
   gsize pos;
 } ReadBuf;
 
@@ -136,7 +136,7 @@ static MateDesktopItem *mate_desktop_item_new_from_gfile(
 static int readbuf_getc(ReadBuf *rb) {
   if (rb->eof) return EOF;
 
-  if (rb->size == 0 || rb->pos == rb->size) {
+  if (rb->size == 0 || rb->size == rb->pos) {
     gssize bytes_read;
 
     if (rb->stream == NULL)
@@ -152,7 +152,7 @@ static int readbuf_getc(ReadBuf *rb) {
     }
 
     if (rb->size != 0) rb->past_first_read = TRUE;
-    rb->size = bytes_read;
+    rb->size = (gsize)bytes_read;
     rb->pos = 0;
   }
 
@@ -220,7 +220,7 @@ static ReadBuf *readbuf_open(GFile *file, GError **error) {
 }
 
 static ReadBuf *readbuf_new_from_string(const char *uri, const char *string,
-                                        gssize length) {
+                                        gsize length) {
   ReadBuf *rb;
 
   g_return_val_if_fail(string != NULL, NULL);
@@ -511,7 +511,7 @@ static MateDesktopItem *mate_desktop_item_new_from_gfile(
   GFileInfo *info;
   GFileType type;
   GFile *parent;
-  gint64 mtime = 0;
+  guint64 mtime = 0;
   ReadBuf *rb;
 
   g_return_val_if_fail(file != NULL, NULL);
@@ -594,7 +594,7 @@ static MateDesktopItem *mate_desktop_item_new_from_gfile(
 
   retval->mtime = DONT_UPDATE_MTIME;
   mate_desktop_item_set_location_gfile(retval, subfn);
-  retval->mtime = mtime;
+  retval->mtime = (gint64)mtime;
 
   parent = g_file_get_parent(file);
   if (parent != NULL) {
@@ -627,11 +627,8 @@ MateDesktopItem *mate_desktop_item_new_from_string(
   g_return_val_if_fail(string != NULL, NULL);
   g_return_val_if_fail(length >= -1, NULL);
 
-  if (length == -1) {
-    length = strlen(string);
-  }
-
-  rb = readbuf_new_from_string(uri, string, length);
+  rb = readbuf_new_from_string(uri, string,
+                               length == -1 ? strlen(string) : (gsize)length);
 
   retval = ditem_load(rb, (flags & MATE_DESKTOP_ITEM_LOAD_NO_TRANSLATIONS) != 0,
                       error);
@@ -842,7 +839,7 @@ static Section *section_from_key(MateDesktopItem *item, const char *key) {
   p = strchr(key, '/');
   if (p == NULL) return NULL;
 
-  name = g_strndup(key, p - key);
+  name = g_strndup(key, (gsize)(p - key));
 
   sec = find_section(item, name);
 
@@ -946,12 +943,12 @@ static void set_locale(MateDesktopItem *item, const char *key,
 }
 
 static char **list_to_vector(GSList *list) {
-  int len = g_slist_length(list);
+  guint len = g_slist_length(list);
   char **argv;
   int i;
   GSList *li;
 
-  argv = g_new0(char *, len + 1);
+  argv = g_new0(char *, (gsize)(len + 1));
 
   for (i = 0, li = list; li != NULL; li = li->next, i++) {
     argv[i] = g_strdup(li->data);
@@ -1275,7 +1272,7 @@ static char **make_spawn_environment_for_sn_context(
   char **retval;
   char **freeme;
   int i, j;
-  int desktop_startup_id_len;
+  size_t desktop_startup_id_len;
 
   retval = freeme = NULL;
 
@@ -1292,7 +1289,7 @@ static char **make_spawn_environment_for_sn_context(
       ;
   }
 
-  retval = g_new(char *, i + 2);
+  retval = g_new(char *, (gsize)(i + 2));
 
   desktop_startup_id_len = strlen("DESKTOP_STARTUP_ID");
 
@@ -1383,7 +1380,7 @@ static gboolean startup_timeout(void *data) {
     std->timeout_id = 0;
   } else {
     std->timeout_id =
-        g_timeout_add_seconds(min_timeout / 1000, startup_timeout, std);
+        g_timeout_add_seconds((guint)(min_timeout / 1000), startup_timeout, std);
   }
 
   /* always remove this one, but we may have reinstalled another one. */
@@ -1461,7 +1458,7 @@ static char **make_environment_for_screen(GdkScreen *screen, char **envp) {
     if (strncmp(envp[env_len], "DISPLAY", strlen("DISPLAY")) == 0)
       display_index = env_len;
 
-  retval = g_new(char *, env_len + 1);
+  retval = g_new(char *, (gsize)(env_len + 1));
   retval[env_len] = NULL;
 
   display = gdk_screen_get_display(screen);
@@ -2257,9 +2254,12 @@ void mate_desktop_item_set_location(MateDesktopItem *item,
       info = g_file_query_info(file, G_FILE_ATTRIBUTE_TIME_MODIFIED,
                                G_FILE_QUERY_INFO_NONE, NULL, NULL);
       if (info) {
-        if (g_file_info_has_attribute(info, G_FILE_ATTRIBUTE_TIME_MODIFIED))
-          item->mtime = g_file_info_get_attribute_uint64(
-              info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+        if (g_file_info_has_attribute(info, G_FILE_ATTRIBUTE_TIME_MODIFIED)) {
+          guint64 mtime =
+            g_file_info_get_attribute_uint64(info,
+                                             G_FILE_ATTRIBUTE_TIME_MODIFIED);
+          item->mtime = (gint64)mtime;
+        }
         g_object_unref(info);
       }
 
@@ -2622,7 +2622,7 @@ static char *cannonize(const char *key, const char *value) {
       return g_strdup("false");
     }
   } else if (standard_is_strings(key)) {
-    int len = strlen(value);
+    size_t len = strlen(value);
     if (len == 0 || value[len - 1] != ';') {
       return g_strconcat(value, ";", NULL);
     }
@@ -2671,7 +2671,7 @@ static char *decode_string_and_dup(const char *s) {
 static char *escape_string_and_dup(const char *s) {
   char *return_value, *p;
   const char *q;
-  int len = 0;
+  gsize len = 0;
 
   if (s == NULL) return g_strdup("");
 

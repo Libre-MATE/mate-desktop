@@ -578,10 +578,12 @@ static char *thumbnail_filename(const char *uri) {
   GChecksum *checksum;
   guint8 digest[16];
   gsize digest_len = sizeof(digest);
+  size_t uri_len;
   char *file;
 
   checksum = g_checksum_new(G_CHECKSUM_MD5);
-  g_checksum_update(checksum, (const guchar *)uri, strlen(uri));
+  uri_len = strlen(uri);
+  g_checksum_update(checksum, (const guchar *)uri, (gssize)uri_len);
 
   g_checksum_get_digest(checksum, digest, &digest_len);
   g_assert(digest_len == 16);

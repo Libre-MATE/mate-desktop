@@ -611,7 +611,7 @@ static gboolean is_fallback_language(const char *code) {
 
 static const char *get_language(const char *code) {
   const char *name;
-  int len;
+  size_t len;
 
   g_assert(code != NULL);
 
@@ -921,7 +921,7 @@ static void languages_variant_init(const char *variant) {
     ctx = g_markup_parse_context_new(&parser, 0, NULL, NULL);
 
     error = NULL;
-    res = g_markup_parse_context_parse(ctx, buf, buf_len, &error);
+    res = g_markup_parse_context_parse(ctx, buf, (gssize)buf_len, &error);
 
     if (!res) {
       g_warning("Failed to parse '%s': %s\n", filename, error->message);
@@ -966,7 +966,7 @@ static void territories_init(void) {
     ctx = g_markup_parse_context_new(&parser, 0, NULL, NULL);
 
     error = NULL;
-    res = g_markup_parse_context_parse(ctx, buf, buf_len, &error);
+    res = g_markup_parse_context_parse(ctx, buf, (gssize)buf_len, &error);
 
     if (!res) {
       g_warning("Failed to parse '%s': %s\n", ISO_CODES_DATADIR "/iso_3166.xml",

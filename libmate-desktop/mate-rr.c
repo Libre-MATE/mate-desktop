@@ -73,7 +73,7 @@ enum {
   SCREEN_SIGNAL_LAST,
 };
 
-gint screen_signals[SCREEN_SIGNAL_LAST];
+guint screen_signals[SCREEN_SIGNAL_LAST];
 
 struct MateRROutput {
   ScreenInfo *info;
@@ -89,7 +89,7 @@ struct MateRROutput {
   MateRRMode **modes;
   int n_preferred;
   guint8 *edid_data;
-  int edid_size;
+  gsize edid_size;
   char *connector_type;
 };
 
@@ -116,8 +116,8 @@ struct MateRRMode {
   ScreenInfo *info;
   RRMode id;
   char *name;
-  int width;
-  int height;
+  guint width;
+  guint height;
   int freq; /* in mHz */
 };
 
@@ -920,7 +920,7 @@ static MateRROutput *output_new(ScreenInfo *info, RROutput id) {
 }
 
 static guint8 *get_property(Display *dpy, RROutput output, Atom atom,
-                            int *len) {
+                            gsize *len) {
 #ifdef HAVE_RANDR
   unsigned char *prop;
   int actual_format;
@@ -951,7 +951,7 @@ static guint8 *get_property(Display *dpy, RROutput output, Atom atom,
 #endif /* HAVE_RANDR */
 }
 
-static guint8 *read_edid_data(MateRROutput *output, int *len) {
+static guint8 *read_edid_data(MateRROutput *output, gsize *len) {
   Atom edid_atom;
   guint8 *result;
 
@@ -1255,12 +1255,12 @@ const char *mate_rr_output_get_name(MateRROutput *output) {
   return output->name;
 }
 
-int mate_rr_output_get_width_mm(MateRROutput *output) {
+gulong mate_rr_output_get_width_mm(MateRROutput *output) {
   g_assert(output != NULL);
   return output->width_mm;
 }
 
-int mate_rr_output_get_height_mm(MateRROutput *output) {
+gulong mate_rr_output_get_height_mm(MateRROutput *output) {
   g_assert(output != NULL);
   return output->height_mm;
 }
@@ -1415,15 +1415,15 @@ gboolean mate_rr_crtc_set_config_with_time(MateRRCrtc *crtc, guint32 timestamp,
   info = crtc->info;
 
   if (mode) {
-    if (x + mode->width > info->max_width ||
-        y + mode->height > info->max_height) {
+    if (x + (int) mode->width > info->max_width ||
+        y + (int) mode->height > info->max_height) {
       g_set_error(
           error, MATE_RR_ERROR, MATE_RR_ERROR_BOUNDS_ERROR,
           /* Translators: the "position", "size", and "maximum"
            * words here are not keywords; please translate them
            * as usual.  A CRTC is a CRT Controller (this is X terminology) */
           _("requested position/size for CRTC %d is outside the allowed limit: "
-            "position=(%d, %d), size=(%d, %d), maximum=(%d, %d)"),
+            "position=(%d, %d), size=(%u, %u), maximum=(%d, %d)"),
           (int)crtc->id, x, y, mode->width, mode->height, info->max_width,
           info->max_height);
       return FALSE;
@@ -1442,7 +1442,7 @@ gboolean mate_rr_crtc_set_config_with_time(MateRRCrtc *crtc, guint32 timestamp,
   status = XRRSetCrtcConfig(DISPLAY(crtc), info->resources, crtc->id, timestamp,
                             x, y, mode ? mode->id : None,
                             xrotation_from_rotation(rotation),
-                            (RROutput *)output_ids->data, output_ids->len);
+                            (RROutput *)output_ids->data, (int)output_ids->len);
 
   g_array_free(output_ids, TRUE);
 
@@ -1524,7 +1524,7 @@ MateRRRotation mate_rr_crtc_get_rotations(MateRRCrtc *crtc) {
 gboolean mate_rr_crtc_supports_rotation(MateRRCrtc *crtc,
                                         MateRRRotation rotation) {
   g_return_val_if_fail(crtc != NULL, FALSE);
-  return (crtc->rotations & rotation);
+  return (crtc->rotations & rotation) != 0;
 }
 
 static MateRRCrtc *crtc_new(ScreenInfo *info, RROutput id) {
@@ -1694,7 +1694,7 @@ static void mode_free(MateRRMode *mode) {
 void mate_rr_crtc_set_gamma(MateRRCrtc *crtc, int size, unsigned short *red,
                             unsigned short *green, unsigned short *blue) {
 #ifdef HAVE_RANDR
-  int copy_size;
+  size_t copy_size;
   XRRCrtcGamma *gamma;
 
   g_return_if_fail(crtc != NULL);
@@ -1706,7 +1706,7 @@ void mate_rr_crtc_set_gamma(MateRRCrtc *crtc, int size, unsigned short *red,
 
   gamma = XRRAllocGamma(crtc->gamma_size);
 
-  copy_size = crtc->gamma_size * sizeof(unsigned short);
+  copy_size = ((size_t)crtc->gamma_size) * sizeof(unsigned short);
   memcpy(gamma->red, red, copy_size);
   memcpy(gamma->green, green, copy_size);
   memcpy(gamma->blue, blue, copy_size);
@@ -1730,7 +1730,7 @@ gboolean mate_rr_crtc_get_gamma(MateRRCrtc *crtc, int *size,
                                 unsigned short **red, unsigned short **green,
                                 unsigned short **blue) {
 #ifdef HAVE_RANDR
-  int copy_size;
+  size_t copy_size;
   unsigned short *r, *g, *b;
   XRRCrtcGamma *gamma;
 
@@ -1739,22 +1739,22 @@ gboolean mate_rr_crtc_get_gamma(MateRRCrtc *crtc, int *size,
   gamma = XRRGetCrtcGamma(DISPLAY(crtc), crtc->id);
   if (!gamma) return FALSE;
 
-  copy_size = crtc->gamma_size * sizeof(unsigned short);
+  copy_size = ((size_t)crtc->gamma_size) * sizeof(unsigned short);
 
   if (red) {
-    r = g_new0(unsigned short, crtc->gamma_size);
+    r = g_new0(unsigned short, (gsize)crtc->gamma_size);
     memcpy(r, gamma->red, copy_size);
     *red = r;
   }
 
   if (green) {
-    g = g_new0(unsigned short, crtc->gamma_size);
+    g = g_new0(unsigned short, (gsize)crtc->gamma_size);
     memcpy(g, gamma->green, copy_size);
     *green = g;
   }
 
   if (blue) {
-    b = g_new0(unsigned short, crtc->gamma_size);
+    b = g_new0(unsigned short, (gsize)crtc->gamma_size);
     memcpy(b, gamma->blue, copy_size);
     *blue = b;
   }

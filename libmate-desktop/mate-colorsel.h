@@ -91,7 +91,7 @@ void mate_color_selection_set_has_palette(MateColorSelection *colorsel,
 void mate_color_selection_set_current_color(MateColorSelection *colorsel,
                                             const GdkColor *color);
 void mate_color_selection_set_current_alpha(MateColorSelection *colorsel,
-                                            guint16 alpha);
+                                            guint alpha);
 void mate_color_selection_get_current_color(MateColorSelection *colorsel,
                                             GdkColor *color);
 guint16 mate_color_selection_get_current_alpha(MateColorSelection *colorsel);

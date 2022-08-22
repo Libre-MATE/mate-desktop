@@ -44,13 +44,11 @@
 struct _MateRRLabelerPrivate {
   MateRRConfig *config;
 
-  int num_outputs;
-
   GdkRGBA *palette;
   GtkWidget **windows;
-
   GdkScreen *screen;
   Atom workarea_atom;
+  gsize num_outputs;
 };
 
 enum { PROP_0, PROP_CONFIG, PROP_LAST };
@@ -93,7 +91,7 @@ static gboolean get_work_area(MateRRLabeler *labeler, GdkRectangle *rect) {
   int format;
   gulong num;
   gulong leftovers;
-  gulong max_len = 4 * 32;
+  long max_len = 4 * 32;
   guchar *ret_workarea;
   long *workareas;
   int result;
@@ -129,10 +127,10 @@ static gboolean get_work_area(MateRRLabeler *labeler, GdkRectangle *rect) {
   desktop = get_current_desktop(labeler->priv->screen);
 
   workareas = (long *)ret_workarea;
-  rect->x = workareas[desktop * 4];
-  rect->y = workareas[desktop * 4 + 1];
-  rect->width = workareas[desktop * 4 + 2];
-  rect->height = workareas[desktop * 4 + 3];
+  rect->x = (int)workareas[desktop * 4];
+  rect->y = (int)workareas[desktop * 4 + 1];
+  rect->width = (int)workareas[desktop * 4 + 2];
+  rect->height = (int)workareas[desktop * 4 + 3];
 
   XFree(ret_workarea);
 
@@ -239,8 +237,8 @@ static void mate_rr_labeler_finalize(GObject *object) {
   G_OBJECT_CLASS(mate_rr_labeler_parent_class)->finalize(object);
 }
 
-static int count_outputs(MateRRConfig *config) {
-  int i;
+static gsize count_outputs(MateRRConfig *config) {
+  gsize i;
   MateRROutputInfo **outputs = mate_rr_config_get_outputs(config);
 
   for (i = 0; outputs[i] != NULL; i++)
@@ -260,21 +258,19 @@ static void make_palette(MateRRLabeler *labeler) {
    */
   double start_hue;
   double end_hue;
-  int i;
-
-  g_assert(labeler->priv->num_outputs > 0);
+  gsize i;
 
   labeler->priv->palette = g_new(GdkRGBA, labeler->priv->num_outputs);
 
-  start_hue = 0.0;   /* red */
-  end_hue = 2.0 / 3; /* blue */
+  start_hue = 0.0;     /* red */
+  end_hue = 2.0 / 3.0; /* blue */
 
   for (i = 0; i < labeler->priv->num_outputs; i++) {
     double h, s, v;
     double r, g, b;
 
-    h = start_hue + (end_hue - start_hue) / labeler->priv->num_outputs * i;
-    s = 1.0 / 3;
+    h = start_hue + (end_hue - start_hue) / ((double)labeler->priv->num_outputs) * (double)i;
+    s = 1.0 / 3.0;
     v = 1.0;
 
     gtk_hsv_to_rgb(h, s, v, &r, &g, &b);
@@ -401,9 +397,9 @@ static GtkWidget *create_label_window(MateRRLabeler *labeler,
 }
 
 static void create_label_windows(MateRRLabeler *labeler) {
-  int i;
   gboolean created_window_for_clone;
   MateRROutputInfo **outputs;
+  gsize i;
 
   labeler->priv->windows = g_new(GtkWidget *, labeler->priv->num_outputs);
 
@@ -456,8 +452,8 @@ MateRRLabeler *mate_rr_labeler_new(MateRRConfig *config) {
  * Hide ouput labels.
  */
 void mate_rr_labeler_hide(MateRRLabeler *labeler) {
-  int i;
   MateRRLabelerPrivate *priv;
+  gsize i;
 
   g_return_if_fail(MATE_IS_RR_LABELER(labeler));
 
@@ -485,8 +481,8 @@ void mate_rr_labeler_hide(MateRRLabeler *labeler) {
 void mate_rr_labeler_get_rgba_for_output(MateRRLabeler *labeler,
                                          MateRROutputInfo *output,
                                          GdkRGBA *color_out) {
-  int i;
   MateRROutputInfo **outputs;
+  gsize i;
 
   g_return_if_fail(MATE_IS_RR_LABELER(labeler));
   g_return_if_fail(MATE_IS_RR_OUTPUT_INFO(output));

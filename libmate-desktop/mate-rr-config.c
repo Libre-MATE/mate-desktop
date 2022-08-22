@@ -101,9 +101,15 @@ struct Parser {
   GQueue *stack;
 };
 
-static int parse_int(const char *text) { return strtol(text, NULL, 0); }
+static int parse_int(const char *text) {
+  long int value = strtol(text, NULL, 0);
+  return (int)value;
+}
 
-static guint parse_uint(const char *text) { return strtoul(text, NULL, 0); }
+static unsigned int parse_uint(const char *text) {
+  unsigned long int value = strtoul(text, NULL, 0);
+  return (unsigned int)value;
+}
 
 static gboolean stack_is(Parser *parser, const char *s1, ...) {
   GList *stack = NULL;
@@ -659,31 +665,23 @@ static gboolean parse_file_gmarkup(const gchar *filename,
                                    GError **err) {
   GMarkupParseContext *context = NULL;
   gchar *contents = NULL;
-  gboolean result = TRUE;
+  gboolean result = FALSE;
   gsize len;
 
-  if (!g_file_get_contents(filename, &contents, &len, err)) {
-    result = FALSE;
+  if (!g_file_get_contents(filename, &contents, &len, err))
     goto out;
-  }
 
   context = g_markup_parse_context_new(parser, 0, data, NULL);
 
-  if (!g_markup_parse_context_parse(context, contents, len, err)) {
-    result = FALSE;
+  if (!g_markup_parse_context_parse(context, contents, (gssize)len, err) ||
+      !g_markup_parse_context_end_parse(context, err))
     goto out;
-  }
 
-  if (!g_markup_parse_context_end_parse(context, err)) {
-    result = FALSE;
-    goto out;
-  }
+  result = TRUE;
 
 out:
-  if (contents) g_free(contents);
-
+  g_free(contents);
   if (context) g_markup_parse_context_free(context);
-
   return result;
 }
 

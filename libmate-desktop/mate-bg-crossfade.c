@@ -283,11 +283,8 @@ gboolean mate_bg_crossfade_set_start_surface(MateBGCrossfade *fade,
 
 static gdouble get_current_time(void) {
   const double microseconds_per_second = (double)G_USEC_PER_SEC;
-  gint64 tv;
-
-  tv = g_get_real_time();
-
-  return (double)(tv / microseconds_per_second);
+  gint64 tv = g_get_real_time();
+  return ((double)tv) / microseconds_per_second;
 }
 
 /**
@@ -518,7 +515,8 @@ static cairo_surface_t *get_root_pixmap_id_surface(GdkDisplay *display) {
     if (XGetGeometry(xdisplay, pixmap, &root_ret, &x_ret, &y_ret, &w_ret,
                      &h_ret, &bw_ret, &depth_ret)) {
       surface =
-          cairo_xlib_surface_create(xdisplay, pixmap, xvisual, w_ret, h_ret);
+          cairo_xlib_surface_create(xdisplay, pixmap, xvisual,
+                                    (int)w_ret, (int)h_ret);
     }
 
     gdk_x11_display_error_trap_pop_ignored(display);

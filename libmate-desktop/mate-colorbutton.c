@@ -528,7 +528,7 @@ static void mate_color_button_clicked(GtkButton *button) {
   mate_color_selection_set_current_color(
       MATE_COLOR_SELECTION(color_dialog->colorsel), &color_button->priv->color);
   mate_color_selection_set_current_alpha(
-      MATE_COLOR_SELECTION(color_dialog->colorsel), color_button->priv->alpha);
+      MATE_COLOR_SELECTION(color_dialog->colorsel), (guint)color_button->priv->alpha);
 
   gtk_window_present(GTK_WINDOW(color_button->priv->cs_dialog));
 }
@@ -589,10 +589,10 @@ void mate_color_button_set_rgba(MateColorButton *color_button,
  *
  * Since: 1.9.1
  **/
-void mate_color_button_set_alpha(MateColorButton *color_button, guint16 alpha) {
+void mate_color_button_set_alpha(MateColorButton *color_button, guint alpha) {
   g_return_if_fail(MATE_IS_COLOR_BUTTON(color_button));
 
-  color_button->priv->alpha = alpha;
+  color_button->priv->alpha = (guint16)alpha;
 
   gtk_widget_queue_draw(color_button->priv->draw_area);
 

@@ -88,7 +88,7 @@ void mate_color_button_set_color(MateColorButton *color_button,
                                  const GdkColor *color);
 void mate_color_button_set_rgba(MateColorButton *color_button,
                                 const GdkRGBA *color);
-void mate_color_button_set_alpha(MateColorButton *color_button, guint16 alpha);
+void mate_color_button_set_alpha(MateColorButton *color_button, guint alpha);
 void mate_color_button_get_color(MateColorButton *color_button,
                                  GdkColor *color);
 void mate_color_button_get_rgba(MateColorButton *color_button, GdkRGBA *color);

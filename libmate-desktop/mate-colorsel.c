@@ -948,11 +948,11 @@ static void set_focus_line_attributes(GtkWidget *drawing_area, cairo_t *cr,
   cairo_set_line_width(cr, *focus_width);
 
   if (dash_list[0]) {
-    gint n_dashes = strlen((gchar *)dash_list);
+    size_t n_dashes = strlen((gchar *)dash_list);
     gdouble *dashes = g_new(gdouble, n_dashes);
     gdouble total_length = 0;
     gdouble dash_offset;
-    gint i;
+    size_t i;
 
     for (i = 0; i < n_dashes; i++) {
       dashes[i] = dash_list[i];
@@ -2097,7 +2097,7 @@ void mate_color_selection_set_current_color(MateColorSelection *colorsel,
  *will also set the original opacity to be @alpha too.
  **/
 void mate_color_selection_set_current_alpha(MateColorSelection *colorsel,
-                                            guint16 alpha) {
+                                            guint alpha) {
   MateColorSelectionPrivate *priv;
   gint i;
 
@@ -2347,7 +2347,7 @@ gboolean mate_color_selection_palette_from_string(const gchar *str,
                                                   GdkColor **colors,
                                                   gint *n_colors) {
   GdkColor *retval;
-  gint count;
+  int count;
   gchar *p;
   gchar *start;
   gchar *copy;
@@ -2371,7 +2371,7 @@ gboolean mate_color_selection_palette_from_string(const gchar *str,
         done = FALSE;
       }
 
-      retval = g_renew(GdkColor, retval, count + 1);
+      retval = g_renew(GdkColor, retval, (gsize)(count + 1));
       if (!gdk_color_parse(start, retval + count)) {
         goto failed;
       }
@@ -2425,7 +2425,7 @@ gchar *mate_color_selection_palette_to_string(const GdkColor *colors,
 
   if (n_colors == 0) return g_strdup("");
 
-  strs = g_new0(gchar *, n_colors + 1);
+  strs = g_new0(gchar *, (gsize)(n_colors + 1));
 
   i = 0;
   while (i < n_colors) {
