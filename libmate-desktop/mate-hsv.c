@@ -627,7 +627,7 @@ static void paint_ring(MateHSV *hsv, cairo_t *cr) {
   gdouble center_x;
   gdouble center_y;
   gdouble inner, outer;
-  guint32 *buf, *p;
+  guint32 *buf;
   gdouble angle;
   gdouble hue;
   gdouble r, g, b;
@@ -650,7 +650,7 @@ static void paint_ring(MateHSV *hsv, cairo_t *cr) {
   buf = g_new(guint32, (gsize)(height * stride / 4));
 
   for (yy = 0; yy < height; yy++) {
-    p = buf + yy * width;
+    guint32 *p = buf + yy * width;
 
     dy = -(yy - center_y);
 
@@ -752,7 +752,7 @@ static void paint_triangle(MateHSV *hsv, cairo_t *cr, gboolean draw_focus) {
   gint x2, y2, r2, g2, b2;     /* Second vertex */
   gint x3, y3, r3, g3, b3;     /* Third vertex */
   gint t;
-  guint32 *buf, *p, c;
+  guint32 *buf, c;
   gint xl, xr, rl, rr, gl, gr, bl, br; /* Scanline data */
   gint xx, yy;
   gint x_interp, y_interp;
@@ -811,7 +811,7 @@ static void paint_triangle(MateHSV *hsv, cairo_t *cr, gboolean draw_focus) {
   buf = g_new(guint32, (gsize)(height * stride / 4));
 
   for (yy = 0; yy < height; yy++) {
-    p = buf + yy * width;
+    guint32 *p = buf + yy * width;
 
     if (yy >= y1 - PAD && yy < y3 + PAD) {
       y_interp = CLAMP(yy, y1, y3);

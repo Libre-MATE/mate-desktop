@@ -196,7 +196,6 @@ static void read_pnp_ids(void) {
   gchar* contents;
   gchar** lines;
   gchar* line;
-  gchar *code, *name;
   gint i;
 
   if (pnp_ids) return;
@@ -210,6 +209,8 @@ static void read_pnp_ids(void) {
       line = lines[i];
 
       if (line[0] && line[1] && line[2] && line[3] == '\t' && line[4]) {
+        gchar *code, *name;
+
         code = line;
         line[3] = '\0';
         name = line + 4;

@@ -485,7 +485,6 @@ static gboolean collect_locales_from_directory(void) {
 static gboolean collect_locales_from_localebin(void) {
   gboolean found_locales = FALSE;
   const gchar *argv[] = {"locale", "-a", NULL};
-  gchar **linep;
   g_auto(GStrv) lines = NULL;
   g_autofree gchar *output = NULL;
 
@@ -498,10 +497,9 @@ static gboolean collect_locales_from_localebin(void) {
 
   lines = g_strsplit(output, "\n", 0);
   if (lines) {
-    linep = lines;
-    while (*linep) {
+    gchar **linep;
+    for (linep = lines; *linep; linep++) {
       if (*linep[0] && add_locale(*linep, TRUE)) found_locales = TRUE;
-      linep++;
     }
   }
 
@@ -663,7 +661,6 @@ static char *get_translated_language(const char *code, const char *locale) {
 
   name = NULL;
   if (language != NULL) {
-    const char *translated_name;
     g_autofree char *old_locale = NULL;
 
     if (locale != NULL) {
@@ -675,7 +672,7 @@ static char *get_translated_language(const char *code, const char *locale) {
       name = g_strdup(_("Unspecified"));
     } else {
       g_autofree char *tmp = NULL;
-      translated_name = dgettext("iso_639", language);
+      const char *translated_name = dgettext("iso_639", language);
       tmp = get_first_item_in_semicolon_list(translated_name);
       name = capitalize_utf8_string(tmp);
     }

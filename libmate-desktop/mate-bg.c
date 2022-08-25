@@ -566,8 +566,6 @@ static void refresh_cache_file(MateBG *bg, GdkPixbuf *new_pixbuf,
                                gint num_monitor, gint width, gint height) {
   gchar *cache_filename;
   gchar *cache_dir;
-  GdkPixbufFormat *format;
-  gchar *format_name;
 
   if ((num_monitor == -1) || (width <= 300) || (height <= 300)) return;
 
@@ -577,9 +575,12 @@ static void refresh_cache_file(MateBG *bg, GdkPixbuf *new_pixbuf,
 
   /* Only refresh scaled file on disk if useful (and don't cache slideshow) */
   if (!cache_file_is_valid(bg->filename, cache_filename)) {
-    format = gdk_pixbuf_get_file_info(bg->filename, NULL, NULL);
+    GdkPixbufFormat *format;
 
+    format = gdk_pixbuf_get_file_info(bg->filename, NULL, NULL);
     if (format != NULL) {
+      gchar *format_name;
+
       if (!g_file_test(cache_dir, G_FILE_TEST_IS_DIR)) {
         g_mkdir_with_parents(cache_dir, 0700);
       } else {
@@ -1147,7 +1148,6 @@ GdkPixbuf *mate_bg_create_thumbnail(MateBG *bg,
                                     GdkScreen *screen, int dest_width,
                                     int dest_height) {
   GdkPixbuf *result;
-  GdkPixbuf *thumb;
 
   g_return_val_if_fail(bg != NULL, NULL);
 
@@ -1157,6 +1157,8 @@ GdkPixbuf *mate_bg_create_thumbnail(MateBG *bg,
   draw_color(bg, result);
 
   if (bg->filename) {
+    GdkPixbuf *thumb;
+
     thumb =
         create_img_thumbnail(bg, factory, screen, dest_width, dest_height, -1);
 
@@ -1192,9 +1194,7 @@ cairo_surface_t *mate_bg_get_surface_from_root(GdkScreen *screen) {
   int screen_num;
   cairo_surface_t *surface;
   cairo_surface_t *source_pixmap;
-  GdkDisplay *gdkdisplay;
   int width, height;
-  cairo_t *cr;
 
   display = GDK_DISPLAY_XDISPLAY(gdk_screen_get_display(screen));
   screen_num = gdk_x11_screen_get_screen_number(screen);
@@ -1212,7 +1212,7 @@ cairo_surface_t *mate_bg_get_surface_from_root(GdkScreen *screen) {
   }
 
   if (data != NULL) {
-    gdkdisplay = gdk_screen_get_display(screen);
+    GdkDisplay *gdkdisplay = gdk_screen_get_display(screen);
     gdk_x11_display_error_trap_push(gdkdisplay);
 
     Pixmap xpixmap = *(Pixmap *)data;
@@ -1235,6 +1235,8 @@ cairo_surface_t *mate_bg_get_surface_from_root(GdkScreen *screen) {
   height = HeightOfScreen(gdk_x11_screen_get_xscreen(screen));
 
   if (source_pixmap) {
+    cairo_t *cr;
+
     surface = cairo_surface_create_similar(source_pixmap, CAIRO_CONTENT_COLOR,
                                            width, height);
 
@@ -1271,10 +1273,9 @@ static void mate_bg_set_root_pixmap_id(GdkScreen *screen, Display *display,
   Atom atoms[G_N_ELEMENTS(atom_names)] = {0};
 
   Atom type;
-  int format, result;
+  int format;
   unsigned long nitems, after;
   unsigned char *data_root, *data_esetroot;
-  GdkDisplay *gdkdisplay;
 
   /* Get atoms for both properties in an array, only if they exist.
    * This method is to avoid multiple round-trips to Xserver
@@ -1282,6 +1283,8 @@ static void mate_bg_set_root_pixmap_id(GdkScreen *screen, Display *display,
   if (XInternAtoms(display, atom_names, G_N_ELEMENTS(atom_names), True,
                    atoms) &&
       atoms[0] != None && atoms[1] != None) {
+    int result;
+
     result = XGetWindowProperty(display, xroot, atoms[0], 0L, 1L, False,
                                 AnyPropertyType, &type, &format, &nitems,
                                 &after, &data_root);
@@ -1297,7 +1300,7 @@ static void mate_bg_set_root_pixmap_id(GdkScreen *screen, Display *display,
         Pixmap xrootpmap = *((Pixmap *)data_root);
         Pixmap esetrootpmap = *((Pixmap *)data_esetroot);
 
-        gdkdisplay = gdk_screen_get_display(screen);
+        GdkDisplay *gdkdisplay = gdk_screen_get_display(screen);
         gdk_x11_display_error_trap_push(gdkdisplay);
         if (xrootpmap && xrootpmap == esetrootpmap) {
           XKillClient(display, xrootpmap);
@@ -1601,7 +1604,6 @@ static GdkPixbuf *get_as_pixbuf_for_size(MateBG *bg, const char *filename,
   if ((ent = file_cache_lookup(bg, PIXBUF, filename))) {
     return g_object_ref(ent->u.pixbuf);
   } else {
-    GdkPixbufFormat *format;
     GdkPixbuf *pixbuf = NULL;
     gchar *tmp = NULL;
     GdkPixbuf *tmp_pixbuf;
@@ -1613,7 +1615,7 @@ static GdkPixbuf *get_as_pixbuf_for_size(MateBG *bg, const char *filename,
 
     if (!pixbuf) {
       /* If scalable choose maximum size */
-      format = gdk_pixbuf_get_file_info(filename, NULL, NULL);
+      GdkPixbufFormat *format = gdk_pixbuf_get_file_info(filename, NULL, NULL);
       if (format != NULL) tmp = gdk_pixbuf_format_get_name(format);
 
       if (g_strcmp0(tmp, "svg") == 0 && (best_width > 0 && best_height > 0) &&
@@ -1744,24 +1746,22 @@ static void ensure_timeout(MateBG *bg, Slide *slide) {
 }
 
 static gint64 get_mtime(const char *filename) {
-  GFile *file;
-  GFileInfo *info;
-  gint64 mtime = -1;
+  gint64 ret = -1;
 
   if (filename) {
-    file = g_file_new_for_path(filename);
-    info = g_file_query_info(file, G_FILE_ATTRIBUTE_TIME_MODIFIED,
-                             G_FILE_QUERY_INFO_NONE, NULL, NULL);
+    GFile *file = g_file_new_for_path(filename);
+    GFileInfo *info = g_file_query_info(file, G_FILE_ATTRIBUTE_TIME_MODIFIED,
+                                        G_FILE_QUERY_INFO_NONE, NULL, NULL);
     if (info) {
-      guint64 t = g_file_info_get_attribute_uint64(info,
-                                                   G_FILE_ATTRIBUTE_TIME_MODIFIED);
-      mtime = (gint64) t;
+      guint64 mtime;
+      mtime = g_file_info_get_attribute_uint64(info,
+                                               G_FILE_ATTRIBUTE_TIME_MODIFIED);
+      ret = (gint64) mtime;
       g_object_unref(info);
     }
     g_object_unref(file);
   }
-
-  return mtime;
+  return ret;
 }
 
 static GdkPixbuf *scale_thumbnail(MateBGPlacement placement,
@@ -2504,7 +2504,6 @@ static SlideShow *read_slideshow_file(const char *filename, GError **err) {
   gsize len;
   SlideShow *show = NULL;
   GMarkupParseContext *context = NULL;
-  time_t t;
 
   if (!filename) return NULL;
 
@@ -2539,8 +2538,7 @@ static SlideShow *read_slideshow_file(const char *filename, GError **err) {
 
   if (show) {
     guint num_items;
-
-    t = mktime(&show->start_tm);
+    time_t t = mktime(&show->start_tm);
 
     show->start_time = (double)t;
 
@@ -2569,7 +2567,7 @@ static GdkPixbuf *create_thumbnail_for_filename(
     MateDesktopThumbnailFactory *factory, const char *filename) {
   char *thumb;
   gint64 mtime;
-  GdkPixbuf *orig, *result = NULL;
+  GdkPixbuf *result = NULL;
   char *uri;
 
   mtime = get_mtime(filename);
@@ -2585,7 +2583,7 @@ static GdkPixbuf *create_thumbnail_for_filename(
     result = gdk_pixbuf_new_from_file(thumb, NULL);
     g_free(thumb);
   } else {
-    orig = gdk_pixbuf_new_from_file(filename, NULL);
+    GdkPixbuf *orig = gdk_pixbuf_new_from_file(filename, NULL);
     if (orig) {
       int orig_width = gdk_pixbuf_get_width(orig);
       int orig_height = gdk_pixbuf_get_height(orig);
@@ -2683,7 +2681,6 @@ GdkPixbuf *mate_bg_create_frame_thumbnail(MateBG *bg,
                                           int dest_height, int frame_num) {
   SlideShow *show;
   GdkPixbuf *result;
-  GdkPixbuf *thumb;
   GList *l;
   int i, skipped;
   gboolean found;
@@ -2720,6 +2717,8 @@ GdkPixbuf *mate_bg_create_frame_thumbnail(MateBG *bg,
   draw_color(bg, result);
 
   if (bg->filename) {
+    GdkPixbuf *thumb;
+
     thumb = create_img_thumbnail(bg, factory, screen, dest_width, dest_height,
                                  frame_num + skipped);
 

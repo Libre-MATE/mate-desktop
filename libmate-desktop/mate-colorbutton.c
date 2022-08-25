@@ -198,13 +198,13 @@ static gboolean mate_color_button_has_alpha(MateColorButton *color_button) {
 }
 
 static cairo_pattern_t *mate_color_button_get_checkered(void) {
-  /* need to respect pixman's stride being a multiple of 4 */
-  static unsigned char data[8] = {0xFF, 0x00, 0x00, 0x00,
-                                  0x00, 0xFF, 0x00, 0x00};
   static cairo_surface_t *checkered = NULL;
   cairo_pattern_t *pattern;
 
   if (checkered == NULL) {
+    /* need to respect pixman's stride being a multiple of 4 */
+    static unsigned char data[8] = {0xFF, 0x00, 0x00, 0x00,
+                                    0x00, 0xFF, 0x00, 0x00};
     checkered =
         cairo_image_surface_create_for_data(data, CAIRO_FORMAT_A8, 2, 2, 4);
   }
@@ -220,7 +220,6 @@ static cairo_pattern_t *mate_color_button_get_checkered(void) {
 static gboolean draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
   MateColorButton *color_button = MATE_COLOR_BUTTON(data);
   cairo_pattern_t *checkered;
-  GtkStyleContext *context;
   GdkRGBA rgba;
 
   mate_color_button_get_rgba(color_button, &rgba);
@@ -247,7 +246,7 @@ static gboolean draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
   cairo_paint(cr);
 
   if (!gtk_widget_is_sensitive(GTK_WIDGET(color_button))) {
-    context = gtk_widget_get_style_context(widget);
+    GtkStyleContext *context = gtk_widget_get_style_context(widget);
     gtk_style_context_get_color(context, GTK_STATE_FLAG_INSENSITIVE, &rgba);
     gdk_cairo_set_source_rgba(cr, &rgba);
     checkered = mate_color_button_get_checkered();

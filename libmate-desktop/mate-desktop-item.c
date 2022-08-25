@@ -1992,7 +1992,6 @@ static gboolean exec_exists(const char *exec) {
  */
 gboolean mate_desktop_item_exists(const MateDesktopItem *item) {
   const char *try_exec;
-  const char *exec;
 
   g_return_val_if_fail(item != NULL, FALSE);
 
@@ -2007,7 +2006,7 @@ gboolean mate_desktop_item_exists(const MateDesktopItem *item) {
     char **argv;
     const char *exe;
 
-    exec = lookup(item, MATE_DESKTOP_ITEM_EXEC);
+    const char *exec = lookup(item, MATE_DESKTOP_ITEM_EXEC);
     if (exec == NULL) return FALSE;
 
     if (!g_shell_parse_argv(exec, &argc, &argv, NULL)) return FALSE;
@@ -2716,11 +2715,10 @@ static gboolean check_locale(const char *locale) {
 
 static void insert_locales(GHashTable *encodings, char *enc, ...) {
   va_list args;
-  char *s;
 
   va_start(args, enc);
   for (;;) {
-    s = va_arg(args, char *);
+    char *s = va_arg(args, char *);
     if (s == NULL) break;
     g_hash_table_insert(encodings, s, enc);
   }
