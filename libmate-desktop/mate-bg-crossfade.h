@@ -36,28 +36,8 @@
 G_BEGIN_DECLS
 
 #define MATE_TYPE_BG_CROSSFADE (mate_bg_crossfade_get_type())
-#define MATE_BG_CROSSFADE(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj), MATE_TYPE_BG_CROSSFADE, MateBGCrossfade))
-#define MATE_BG_CROSSFADE_CLASS(klass)                      \
-  (G_TYPE_CHECK_CLASS_CAST((klass), MATE_TYPE_BG_CROSSFADE, \
-                           MateBGCrossfadeClass))
-#define MATE_IS_BG_CROSSFADE(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj), MATE_TYPE_BG_CROSSFADE))
-#define MATE_IS_BG_CROSSFADE_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass), MATE_TYPE_BG_CROSSFADE))
-#define MATE_BG_CROSSFADE_GET_CLASS(obj)                    \
-  (G_TYPE_INSTANCE_GET_CLASS((obj), MATE_TYPE_BG_CROSSFADE, \
-                             MateBGCrossfadeClass))
-
-typedef struct _MateBGCrossfadePrivate MateBGCrossfadePrivate;
-typedef struct _MateBGCrossfade MateBGCrossfade;
-typedef struct _MateBGCrossfadeClass MateBGCrossfadeClass;
-
-struct _MateBGCrossfade {
-  GObject parent_object;
-
-  MateBGCrossfadePrivate *priv;
-};
+G_DECLARE_DERIVABLE_TYPE(MateBGCrossfade, mate_bg_crossfade, MATE, BG_CROSSFADE,
+                         GObject)
 
 struct _MateBGCrossfadeClass {
   GObjectClass parent_class;
@@ -65,7 +45,6 @@ struct _MateBGCrossfadeClass {
   void (*finished)(MateBGCrossfade *fade, GdkWindow *window);
 };
 
-GType mate_bg_crossfade_get_type(void);
 MateBGCrossfade *mate_bg_crossfade_new(int width, int height);
 
 gboolean mate_bg_crossfade_set_start_surface(MateBGCrossfade *fade,

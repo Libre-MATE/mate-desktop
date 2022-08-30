@@ -36,7 +36,7 @@
 
 #include "mate-bg-crossfade.h"
 
-struct _MateBGCrossfadePrivate {
+typedef struct {
   GdkWindow *window;
   GtkWidget *widget;
   int width;
@@ -48,7 +48,7 @@ struct _MateBGCrossfadePrivate {
   gdouble total_duration;
   guint timeout_id;
   guint is_first_frame : 1;
-};
+} MateBGCrossfadePrivate;
 
 enum {
   PROP_0,
@@ -65,18 +65,18 @@ G_DEFINE_TYPE_WITH_PRIVATE(MateBGCrossfade, mate_bg_crossfade, G_TYPE_OBJECT)
 static void mate_bg_crossfade_set_property(GObject *object, guint property_id,
                                            const GValue *value,
                                            GParamSpec *pspec) {
-  MateBGCrossfade *fade;
+  MateBGCrossfadePrivate *priv;
 
   g_assert(MATE_IS_BG_CROSSFADE(object));
 
-  fade = MATE_BG_CROSSFADE(object);
+  priv = mate_bg_crossfade_get_instance_private(MATE_BG_CROSSFADE(object));
 
   switch (property_id) {
     case PROP_WIDTH:
-      fade->priv->width = g_value_get_int(value);
+      priv->width = g_value_get_int(value);
       break;
     case PROP_HEIGHT:
-      fade->priv->height = g_value_get_int(value);
+      priv->height = g_value_get_int(value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -86,18 +86,18 @@ static void mate_bg_crossfade_set_property(GObject *object, guint property_id,
 
 static void mate_bg_crossfade_get_property(GObject *object, guint property_id,
                                            GValue *value, GParamSpec *pspec) {
-  MateBGCrossfade *fade;
+  MateBGCrossfadePrivate *priv;
 
   g_assert(MATE_IS_BG_CROSSFADE(object));
 
-  fade = MATE_BG_CROSSFADE(object);
+  priv = mate_bg_crossfade_get_instance_private(MATE_BG_CROSSFADE(object));
 
   switch (property_id) {
     case PROP_WIDTH:
-      g_value_set_int(value, fade->priv->width);
+      g_value_set_int(value, priv->width);
       break;
     case PROP_HEIGHT:
-      g_value_set_int(value, fade->priv->height);
+      g_value_set_int(value, priv->height);
       break;
 
     default:
@@ -107,25 +107,25 @@ static void mate_bg_crossfade_get_property(GObject *object, guint property_id,
 }
 
 static void mate_bg_crossfade_finalize(GObject *object) {
-  MateBGCrossfade *fade;
+  MateBGCrossfadePrivate *priv;
 
-  fade = MATE_BG_CROSSFADE(object);
+  g_assert(MATE_IS_BG_CROSSFADE(object));
 
-  mate_bg_crossfade_stop(fade);
+  priv = mate_bg_crossfade_get_instance_private(MATE_BG_CROSSFADE(object));
 
-  if (fade->priv->fading_surface != NULL) {
-    cairo_surface_destroy(fade->priv->fading_surface);
-    fade->priv->fading_surface = NULL;
+  if (priv->fading_surface != NULL) {
+    cairo_surface_destroy(priv->fading_surface);
+    priv->fading_surface = NULL;
   }
 
-  if (fade->priv->start_surface != NULL) {
-    cairo_surface_destroy(fade->priv->start_surface);
-    fade->priv->start_surface = NULL;
+  if (priv->start_surface != NULL) {
+    cairo_surface_destroy(priv->start_surface);
+    priv->start_surface = NULL;
   }
 
-  if (fade->priv->end_surface != NULL) {
-    cairo_surface_destroy(fade->priv->end_surface);
-    fade->priv->end_surface = NULL;
+  if (priv->end_surface != NULL) {
+    cairo_surface_destroy(priv->end_surface);
+    priv->end_surface = NULL;
   }
 }
 
@@ -178,14 +178,16 @@ static void mate_bg_crossfade_class_init(MateBGCrossfadeClass *fade_class) {
 }
 
 static void mate_bg_crossfade_init(MateBGCrossfade *fade) {
-  fade->priv = mate_bg_crossfade_get_instance_private(fade);
+  MateBGCrossfadePrivate *priv;
 
-  fade->priv->window = NULL;
-  fade->priv->widget = NULL;
-  fade->priv->fading_surface = NULL;
-  fade->priv->start_surface = NULL;
-  fade->priv->end_surface = NULL;
-  fade->priv->timeout_id = 0;
+  priv = mate_bg_crossfade_get_instance_private(fade);
+
+  priv->window = NULL;
+  priv->widget = NULL;
+  priv->fading_surface = NULL;
+  priv->start_surface = NULL;
+  priv->end_surface = NULL;
+  priv->timeout_id = 0;
 }
 
 /**
@@ -268,17 +270,20 @@ static cairo_surface_t *tile_surface(cairo_surface_t *surface, int width,
  **/
 gboolean mate_bg_crossfade_set_start_surface(MateBGCrossfade *fade,
                                              cairo_surface_t *surface) {
+  MateBGCrossfadePrivate *priv;
+
   g_return_val_if_fail(MATE_IS_BG_CROSSFADE(fade), FALSE);
 
-  if (fade->priv->start_surface != NULL) {
-    cairo_surface_destroy(fade->priv->start_surface);
-    fade->priv->start_surface = NULL;
+  priv = mate_bg_crossfade_get_instance_private(fade);
+
+  if (priv->start_surface != NULL) {
+    cairo_surface_destroy(priv->start_surface);
+    priv->start_surface = NULL;
   }
 
-  fade->priv->start_surface =
-      tile_surface(surface, fade->priv->width, fade->priv->height);
+  priv->start_surface = tile_surface(surface, priv->width, priv->height);
 
-  return fade->priv->start_surface != NULL;
+  return priv->start_surface != NULL;
 }
 
 static gdouble get_current_time(void) {
@@ -301,20 +306,23 @@ static gdouble get_current_time(void) {
  **/
 gboolean mate_bg_crossfade_set_end_surface(MateBGCrossfade *fade,
                                            cairo_surface_t *surface) {
+  MateBGCrossfadePrivate *priv;
+
   g_return_val_if_fail(MATE_IS_BG_CROSSFADE(fade), FALSE);
 
-  if (fade->priv->end_surface != NULL) {
-    cairo_surface_destroy(fade->priv->end_surface);
-    fade->priv->end_surface = NULL;
+  priv = mate_bg_crossfade_get_instance_private(fade);
+
+  if (priv->end_surface != NULL) {
+    cairo_surface_destroy(priv->end_surface);
+    priv->end_surface = NULL;
   }
 
-  fade->priv->end_surface =
-      tile_surface(surface, fade->priv->width, fade->priv->height);
+  priv->end_surface = tile_surface(surface, priv->width, priv->height);
 
   /* Reset timer in case we're called while animating
    */
-  fade->priv->start_time = get_current_time();
-  return fade->priv->end_surface != NULL;
+  priv->start_time = get_current_time();
+  return priv->end_surface != NULL;
 }
 
 static gboolean animations_are_disabled(MateBGCrossfade *fade) {
@@ -322,12 +330,14 @@ static gboolean animations_are_disabled(MateBGCrossfade *fade) {
   GdkScreen *screen;
   gboolean are_enabled;
 
-  g_assert(fade->priv->window != NULL);
+  MateBGCrossfadePrivate *priv;
 
-  screen = gdk_window_get_screen(fade->priv->window);
+  priv = mate_bg_crossfade_get_instance_private(fade);
 
+  g_assert(priv->window != NULL);
+
+  screen = gdk_window_get_screen(priv->window);
   settings = gtk_settings_get_for_screen(screen);
-
   g_object_get(settings, "gtk-enable-animations", &are_enabled, NULL);
 
   return !are_enabled;
@@ -335,39 +345,45 @@ static gboolean animations_are_disabled(MateBGCrossfade *fade) {
 
 static void send_root_property_change_notification(MateBGCrossfade *fade) {
   long zero_length_pixmap = 0;
+  MateBGCrossfadePrivate *priv;
+
+  priv = mate_bg_crossfade_get_instance_private(fade);
 
   /* We do a zero length append to force a change notification,
    * without changing the value */
-  XChangeProperty(GDK_WINDOW_XDISPLAY(fade->priv->window),
-                  GDK_WINDOW_XID(fade->priv->window),
+  XChangeProperty(GDK_WINDOW_XDISPLAY(priv->window),
+                  GDK_WINDOW_XID(priv->window),
                   gdk_x11_get_xatom_by_name("_XROOTPMAP_ID"), XA_PIXMAP, 32,
                   PropModeAppend, (unsigned char *)&zero_length_pixmap, 0);
 }
 
 static void draw_background(MateBGCrossfade *fade) {
-  if (fade->priv->widget != NULL) {
-    gtk_widget_queue_draw(fade->priv->widget);
-  } else if (gdk_window_get_window_type(fade->priv->window) !=
-             GDK_WINDOW_ROOT) {
+  MateBGCrossfadePrivate *priv;
+
+  priv = mate_bg_crossfade_get_instance_private(fade);
+
+  if (priv->widget != NULL) {
+    gtk_widget_queue_draw(priv->widget);
+  } else if (gdk_window_get_window_type(priv->window) != GDK_WINDOW_ROOT) {
     cairo_t *cr;
     cairo_region_t *region;
     GdkDrawingContext *draw_context;
 
-    region = gdk_window_get_visible_region(fade->priv->window);
-    draw_context = gdk_window_begin_draw_frame(fade->priv->window, region);
+    region = gdk_window_get_visible_region(priv->window);
+    draw_context = gdk_window_begin_draw_frame(priv->window, region);
     cr = gdk_drawing_context_get_cairo_context(draw_context);
     cairo_set_operator(cr, CAIRO_OPERATOR_OVER);
-    cairo_set_source_surface(cr, fade->priv->fading_surface, 0, 0);
+    cairo_set_source_surface(cr, priv->fading_surface, 0, 0);
     cairo_paint(cr);
-    gdk_window_end_draw_frame(fade->priv->window, draw_context);
+    gdk_window_end_draw_frame(priv->window, draw_context);
     cairo_region_destroy(region);
   } else {
-    Display *xdisplay = GDK_WINDOW_XDISPLAY(fade->priv->window);
+    Display *xdisplay = GDK_WINDOW_XDISPLAY(priv->window);
     GdkDisplay *display;
     display = gdk_display_get_default();
     gdk_x11_display_error_trap_push(display);
     XGrabServer(xdisplay);
-    XClearWindow(xdisplay, GDK_WINDOW_XID(fade->priv->window));
+    XClearWindow(xdisplay, GDK_WINDOW_XID(priv->window));
     send_root_property_change_notification(fade);
     XFlush(xdisplay);
     XUngrabServer(xdisplay);
@@ -377,9 +393,13 @@ static void draw_background(MateBGCrossfade *fade) {
 
 static gboolean on_widget_draw(GtkWidget *widget, cairo_t *cr,
                                MateBGCrossfade *fade) {
-  g_assert(fade->priv->fading_surface != NULL);
+  MateBGCrossfadePrivate *priv;
 
-  cairo_set_source_surface(cr, fade->priv->fading_surface, 0, 0);
+  priv = mate_bg_crossfade_get_instance_private(fade);
+
+  g_assert(priv->fading_surface != NULL);
+
+  cairo_set_source_surface(cr, priv->fading_surface, 0, 0);
   cairo_pattern_set_extend(cairo_get_source(cr), CAIRO_EXTEND_REPEAT);
   cairo_paint(cr);
 
@@ -390,25 +410,27 @@ static gboolean on_tick(MateBGCrossfade *fade) {
   gdouble now, percent_done;
   cairo_t *cr;
   cairo_status_t status;
+  MateBGCrossfadePrivate *priv;
 
   g_return_val_if_fail(MATE_IS_BG_CROSSFADE(fade), FALSE);
 
+  priv = mate_bg_crossfade_get_instance_private(fade);
   now = get_current_time();
 
-  percent_done = (now - fade->priv->start_time) / fade->priv->total_duration;
+  percent_done = (now - priv->start_time) / priv->total_duration;
   percent_done = CLAMP(percent_done, 0.0, 1.0);
 
   /* If it's taking a long time to get to the first frame,
    * then lengthen the duration, so the user will get to see
    * the effect.
    */
-  if (fade->priv->is_first_frame && percent_done > .33) {
-    fade->priv->is_first_frame = FALSE;
-    fade->priv->total_duration *= 1.5;
+  if (priv->is_first_frame && percent_done > .33) {
+    priv->is_first_frame = FALSE;
+    priv->total_duration *= 1.5;
     return on_tick(fade);
   }
 
-  if (fade->priv->fading_surface == NULL || fade->priv->end_surface == NULL) {
+  if (priv->fading_surface == NULL || priv->end_surface == NULL) {
     return FALSE;
   }
 
@@ -424,9 +446,9 @@ static gboolean on_tick(MateBGCrossfade *fade) {
    * even the fastest machines will get *some* fade because the framerate
    * is capped.
    */
-  cr = cairo_create(fade->priv->fading_surface);
+  cr = cairo_create(priv->fading_surface);
 
-  cairo_set_source_surface(cr, fade->priv->end_surface, 0.0, 0.0);
+  cairo_set_source_surface(cr, priv->end_surface, 0.0, 0.0);
   cairo_paint_with_alpha(cr, percent_done);
 
   status = cairo_status(cr);
@@ -440,37 +462,40 @@ static gboolean on_tick(MateBGCrossfade *fade) {
 
 static void on_finished(MateBGCrossfade *fade) {
   cairo_t *cr;
+  MateBGCrossfadePrivate *priv;
 
-  if (fade->priv->timeout_id == 0) return;
+  priv = mate_bg_crossfade_get_instance_private(fade);
 
-  g_assert(fade->priv->fading_surface != NULL);
-  g_assert(fade->priv->end_surface != NULL);
+  if (priv->timeout_id == 0) return;
 
-  cr = cairo_create(fade->priv->fading_surface);
-  cairo_set_source_surface(cr, fade->priv->end_surface, 0, 0);
+  g_assert(priv->fading_surface != NULL);
+  g_assert(priv->end_surface != NULL);
+
+  cr = cairo_create(priv->fading_surface);
+  cairo_set_source_surface(cr, priv->end_surface, 0, 0);
   cairo_paint(cr);
   cairo_destroy(cr);
   draw_background(fade);
 
-  cairo_surface_destroy(fade->priv->fading_surface);
-  fade->priv->fading_surface = NULL;
+  cairo_surface_destroy(priv->fading_surface);
+  priv->fading_surface = NULL;
 
-  cairo_surface_destroy(fade->priv->end_surface);
-  fade->priv->end_surface = NULL;
+  cairo_surface_destroy(priv->end_surface);
+  priv->end_surface = NULL;
 
-  g_assert(fade->priv->start_surface != NULL);
+  g_assert(priv->start_surface != NULL);
 
-  cairo_surface_destroy(fade->priv->start_surface);
-  fade->priv->start_surface = NULL;
+  cairo_surface_destroy(priv->start_surface);
+  priv->start_surface = NULL;
 
-  if (fade->priv->widget != NULL) {
-    g_signal_handlers_disconnect_by_func(fade->priv->widget,
+  if (priv->widget != NULL) {
+    g_signal_handlers_disconnect_by_func(priv->widget,
                                          (GCallback)on_widget_draw, fade);
   }
-  fade->priv->widget = NULL;
+  priv->widget = NULL;
 
-  fade->priv->timeout_id = 0;
-  g_signal_emit(fade, signals[FINISHED], 0, fade->priv->window);
+  priv->timeout_id = 0;
+  g_signal_emit(fade, signals[FINISHED], 0, priv->window);
 }
 
 /* This function queries the _XROOTPMAP_ID property from the root window
@@ -514,9 +539,8 @@ static cairo_surface_t *get_root_pixmap_id_surface(GdkDisplay *display) {
     gdk_x11_display_error_trap_push(display);
     if (XGetGeometry(xdisplay, pixmap, &root_ret, &x_ret, &y_ret, &w_ret,
                      &h_ret, &bw_ret, &depth_ret)) {
-      surface =
-          cairo_xlib_surface_create(xdisplay, pixmap, xvisual,
-                                    (int)w_ret, (int)h_ret);
+      surface = cairo_xlib_surface_create(xdisplay, pixmap, xvisual, (int)w_ret,
+                                          (int)h_ret);
     }
 
     gdk_x11_display_error_trap_pop_ignored(display);
@@ -542,11 +566,15 @@ static cairo_surface_t *get_root_pixmap_id_surface(GdkDisplay *display) {
 void mate_bg_crossfade_start(MateBGCrossfade *fade, GdkWindow *window) {
   GSource *source;
   GMainContext *context;
+  MateBGCrossfadePrivate *priv;
 
   g_return_if_fail(MATE_IS_BG_CROSSFADE(fade));
+
+  priv = mate_bg_crossfade_get_instance_private(fade);
+
   g_return_if_fail(window != NULL);
-  g_return_if_fail(fade->priv->start_surface != NULL);
-  g_return_if_fail(fade->priv->end_surface != NULL);
+  g_return_if_fail(priv->start_surface != NULL);
+  g_return_if_fail(priv->end_surface != NULL);
   g_return_if_fail(!mate_bg_crossfade_is_started(fade));
   g_return_if_fail(gdk_window_get_window_type(window) != GDK_WINDOW_FOREIGN);
 
@@ -561,26 +589,25 @@ void mate_bg_crossfade_start(MateBGCrossfade *fade, GdkWindow *window) {
     cairo_surface_destroy(surface);
   }
 
-  if (fade->priv->fading_surface != NULL) {
-    cairo_surface_destroy(fade->priv->fading_surface);
-    fade->priv->fading_surface = NULL;
+  if (priv->fading_surface != NULL) {
+    cairo_surface_destroy(priv->fading_surface);
+    priv->fading_surface = NULL;
   }
 
-  fade->priv->window = window;
-  if (gdk_window_get_window_type(fade->priv->window) != GDK_WINDOW_ROOT) {
-    fade->priv->fading_surface = tile_surface(
-        fade->priv->start_surface, fade->priv->width, fade->priv->height);
-    if (fade->priv->widget != NULL) {
-      g_signal_connect(fade->priv->widget, "draw", (GCallback)on_widget_draw,
-                       fade);
+  priv->window = window;
+  if (gdk_window_get_window_type(priv->window) != GDK_WINDOW_ROOT) {
+    priv->fading_surface =
+        tile_surface(priv->start_surface, priv->width, priv->height);
+    if (priv->widget != NULL) {
+      g_signal_connect(priv->widget, "draw", (GCallback)on_widget_draw, fade);
     }
   } else {
     cairo_t *cr;
-    GdkDisplay *display = gdk_window_get_display(fade->priv->window);
+    GdkDisplay *display = gdk_window_get_display(priv->window);
 
-    fade->priv->fading_surface = get_root_pixmap_id_surface(display);
-    cr = cairo_create(fade->priv->fading_surface);
-    cairo_set_source_surface(cr, fade->priv->start_surface, 0, 0);
+    priv->fading_surface = get_root_pixmap_id_surface(display);
+    cr = cairo_create(priv->fading_surface);
+    cairo_set_source_surface(cr, priv->start_surface, 0, 0);
     cairo_paint(cr);
     cairo_destroy(cr);
   }
@@ -590,12 +617,12 @@ void mate_bg_crossfade_start(MateBGCrossfade *fade, GdkWindow *window) {
   g_source_set_callback(source, (GSourceFunc)on_tick, fade,
                         (GDestroyNotify)on_finished);
   context = g_main_context_default();
-  fade->priv->timeout_id = g_source_attach(source, context);
+  priv->timeout_id = g_source_attach(source, context);
   g_source_unref(source);
 
-  fade->priv->is_first_frame = TRUE;
-  fade->priv->total_duration = .75;
-  fade->priv->start_time = get_current_time();
+  priv->is_first_frame = TRUE;
+  priv->total_duration = .75;
+  priv->start_time = get_current_time();
 }
 
 /**
@@ -612,13 +639,15 @@ void mate_bg_crossfade_start(MateBGCrossfade *fade, GdkWindow *window) {
  **/
 void mate_bg_crossfade_start_widget(MateBGCrossfade *fade, GtkWidget *widget) {
   GdkWindow *window;
+  MateBGCrossfadePrivate *priv;
 
   g_return_if_fail(MATE_IS_BG_CROSSFADE(fade));
   g_return_if_fail(widget != NULL);
 
-  fade->priv->widget = widget;
-  gtk_widget_realize(fade->priv->widget);
-  window = gtk_widget_get_window(fade->priv->widget);
+  priv = mate_bg_crossfade_get_instance_private(fade);
+  priv->widget = widget;
+  gtk_widget_realize(priv->widget);
+  window = gtk_widget_get_window(priv->widget);
 
   mate_bg_crossfade_start(fade, window);
 }
@@ -634,9 +663,12 @@ void mate_bg_crossfade_start_widget(MateBGCrossfade *fade, GtkWidget *widget) {
  * Return value: %TRUE if fading, or %FALSE if not fading
  **/
 gboolean mate_bg_crossfade_is_started(MateBGCrossfade *fade) {
+  MateBGCrossfadePrivate *priv;
+
   g_return_val_if_fail(MATE_IS_BG_CROSSFADE(fade), FALSE);
 
-  return fade->priv->timeout_id != 0;
+  priv = mate_bg_crossfade_get_instance_private(fade);
+  return priv->timeout_id != 0;
 }
 
 /**
@@ -648,11 +680,15 @@ gboolean mate_bg_crossfade_is_started(MateBGCrossfade *fade) {
  * already stopped.
  **/
 void mate_bg_crossfade_stop(MateBGCrossfade *fade) {
+  MateBGCrossfadePrivate *priv;
+
   g_return_if_fail(MATE_IS_BG_CROSSFADE(fade));
+
+  priv = mate_bg_crossfade_get_instance_private(fade);
 
   if (!mate_bg_crossfade_is_started(fade)) return;
 
-  g_assert(fade->priv->timeout_id != 0);
-  g_source_remove(fade->priv->timeout_id);
-  fade->priv->timeout_id = 0;
+  g_assert(priv->timeout_id != 0);
+  g_source_remove(priv->timeout_id);
+  priv->timeout_id = 0;
 }
