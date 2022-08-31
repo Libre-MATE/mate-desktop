@@ -223,16 +223,13 @@ static void mate_rr_labeler_finalize(GObject *object) {
   gdk_window_remove_filter(gdkwindow, (GdkFilterFunc)screen_xevent_filter,
                            labeler);
 
-  if (labeler->priv->config != NULL) {
-    g_object_unref(labeler->priv->config);
-  }
+  g_clear_object(&labeler->priv->config);
 
-  if (labeler->priv->windows != NULL) {
+  if (labeler->priv->windows != NULL)
     mate_rr_labeler_hide(labeler);
-    g_free(labeler->priv->windows);
-  }
 
-  g_free(labeler->priv->palette);
+  g_clear_pointer(&labeler->priv->windows, g_free);
+  g_clear_pointer(&labeler->priv->palette, g_free);
 
   G_OBJECT_CLASS(mate_rr_labeler_parent_class)->finalize(object);
 }
@@ -462,12 +459,8 @@ void mate_rr_labeler_hide(MateRRLabeler *labeler) {
   if (priv->windows == NULL) return;
 
   for (i = 0; i < priv->num_outputs; i++)
-    if (priv->windows[i] != NULL) {
-      gtk_widget_destroy(priv->windows[i]);
-      priv->windows[i] = NULL;
-    }
-  g_free(priv->windows);
-  priv->windows = NULL;
+    g_clear_pointer(&priv->windows[i], gtk_widget_destroy);
+  g_clear_pointer(&priv->windows, g_free);
 }
 
 /**

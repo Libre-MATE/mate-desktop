@@ -538,10 +538,7 @@ static void mate_color_selection_dispose(GObject *object) {
   MateColorSelection *cselection = MATE_COLOR_SELECTION(object);
   MateColorSelectionPrivate *priv = cselection->private_data;
 
-  if (priv->dropper_grab_widget) {
-    gtk_widget_destroy(priv->dropper_grab_widget);
-    priv->dropper_grab_widget = NULL;
-  }
+  g_clear_pointer(&priv->dropper_grab_widget, gtk_widget_destroy);
 
   G_OBJECT_CLASS(mate_color_selection_parent_class)->dispose(object);
 }

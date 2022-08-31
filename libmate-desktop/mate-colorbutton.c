@@ -51,12 +51,9 @@
 struct _MateColorButtonPrivate {
   GtkWidget *draw_area; /* Widget where we draw the color sample */
   GtkWidget *cs_dialog; /* Color selection dialog */
-
   gchar *title; /* Title for the color selection window */
-
   GdkColor color;
   guint16 alpha;
-
   guint use_alpha : 1; /* Use alpha or not */
 };
 
@@ -397,12 +394,8 @@ static void mate_color_button_init(MateColorButton *color_button) {
 static void mate_color_button_finalize(GObject *object) {
   MateColorButton *color_button = MATE_COLOR_BUTTON(object);
 
-  if (color_button->priv->cs_dialog != NULL)
-    gtk_widget_destroy(color_button->priv->cs_dialog);
-  color_button->priv->cs_dialog = NULL;
-
-  g_free(color_button->priv->title);
-  color_button->priv->title = NULL;
+  g_clear_pointer(&color_button->priv->cs_dialog, gtk_widget_destroy);
+  g_clear_pointer(&color_button->priv->title, g_free);
 
   G_OBJECT_CLASS(mate_color_button_parent_class)->finalize(object);
 }

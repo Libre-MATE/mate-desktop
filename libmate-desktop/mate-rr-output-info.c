@@ -44,8 +44,8 @@ static void mate_rr_output_info_init(MateRROutputInfo *self) {
 static void mate_rr_output_info_finalize(GObject *gobject) {
   MateRROutputInfo *self = MATE_RR_OUTPUT_INFO(gobject);
 
-  g_free(self->priv->name);
-  g_free(self->priv->display_name);
+  g_clear_pointer(&self->priv->name, g_free);
+  g_clear_pointer(&self->priv->display_name, g_free);
 
   G_OBJECT_CLASS(mate_rr_output_info_parent_class)->finalize(gobject);
 }

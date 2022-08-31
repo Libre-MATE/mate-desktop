@@ -113,20 +113,9 @@ static void mate_bg_crossfade_finalize(GObject *object) {
 
   priv = mate_bg_crossfade_get_instance_private(MATE_BG_CROSSFADE(object));
 
-  if (priv->fading_surface != NULL) {
-    cairo_surface_destroy(priv->fading_surface);
-    priv->fading_surface = NULL;
-  }
-
-  if (priv->start_surface != NULL) {
-    cairo_surface_destroy(priv->start_surface);
-    priv->start_surface = NULL;
-  }
-
-  if (priv->end_surface != NULL) {
-    cairo_surface_destroy(priv->end_surface);
-    priv->end_surface = NULL;
-  }
+  g_clear_pointer(&priv->fading_surface, cairo_surface_destroy);
+  g_clear_pointer(&priv->start_surface, cairo_surface_destroy);
+  g_clear_pointer(&priv->end_surface, cairo_surface_destroy);
 }
 
 static void mate_bg_crossfade_class_init(MateBGCrossfadeClass *fade_class) {
@@ -226,6 +215,7 @@ static cairo_surface_t *tile_surface(cairo_surface_t *surface, int width,
 
   if (surface != NULL) {
     cairo_pattern_t *pattern;
+
     cairo_set_source_surface(cr, surface, 0.0, 0.0);
     pattern = cairo_get_source(cr);
     cairo_pattern_set_extend(pattern, CAIRO_EXTEND_REPEAT);
@@ -246,10 +236,8 @@ static cairo_surface_t *tile_surface(cairo_surface_t *surface, int width,
 
   cairo_paint(cr);
 
-  if (cairo_status(cr) != CAIRO_STATUS_SUCCESS) {
-    cairo_surface_destroy(copy);
-    copy = NULL;
-  }
+  if (cairo_status(cr) != CAIRO_STATUS_SUCCESS)
+    g_clear_pointer(&copy, cairo_surface_destroy);
 
   cairo_destroy(cr);
 
@@ -275,12 +263,7 @@ gboolean mate_bg_crossfade_set_start_surface(MateBGCrossfade *fade,
   g_return_val_if_fail(MATE_IS_BG_CROSSFADE(fade), FALSE);
 
   priv = mate_bg_crossfade_get_instance_private(fade);
-
-  if (priv->start_surface != NULL) {
-    cairo_surface_destroy(priv->start_surface);
-    priv->start_surface = NULL;
-  }
-
+  g_clear_pointer(&priv->start_surface, cairo_surface_destroy);
   priv->start_surface = tile_surface(surface, priv->width, priv->height);
 
   return priv->start_surface != NULL;
@@ -311,12 +294,7 @@ gboolean mate_bg_crossfade_set_end_surface(MateBGCrossfade *fade,
   g_return_val_if_fail(MATE_IS_BG_CROSSFADE(fade), FALSE);
 
   priv = mate_bg_crossfade_get_instance_private(fade);
-
-  if (priv->end_surface != NULL) {
-    cairo_surface_destroy(priv->end_surface);
-    priv->end_surface = NULL;
-  }
-
+  g_clear_pointer(&priv->end_surface, cairo_surface_destroy);
   priv->end_surface = tile_surface(surface, priv->width, priv->height);
 
   /* Reset timer in case we're called while animating
@@ -379,8 +357,8 @@ static void draw_background(MateBGCrossfade *fade) {
     cairo_region_destroy(region);
   } else {
     Display *xdisplay = GDK_WINDOW_XDISPLAY(priv->window);
-    GdkDisplay *display;
-    display = gdk_display_get_default();
+    GdkDisplay *display = gdk_display_get_default();
+
     gdk_x11_display_error_trap_push(display);
     XGrabServer(xdisplay);
     XClearWindow(xdisplay, GDK_WINDOW_XID(priv->window));
@@ -430,13 +408,11 @@ static gboolean on_tick(MateBGCrossfade *fade) {
     return on_tick(fade);
   }
 
-  if (priv->fading_surface == NULL || priv->end_surface == NULL) {
+  if (priv->fading_surface == NULL || priv->end_surface == NULL)
     return FALSE;
-  }
 
-  if (animations_are_disabled(fade)) {
+  if (animations_are_disabled(fade))
     return FALSE;
-  }
 
   /* We accumulate the results in place for performance reasons.
    *
@@ -454,9 +430,9 @@ static gboolean on_tick(MateBGCrossfade *fade) {
   status = cairo_status(cr);
   cairo_destroy(cr);
 
-  if (status == CAIRO_STATUS_SUCCESS) {
+  if (status == CAIRO_STATUS_SUCCESS)
     draw_background(fade);
-  }
+
   return percent_done <= .99;
 }
 
@@ -477,16 +453,12 @@ static void on_finished(MateBGCrossfade *fade) {
   cairo_destroy(cr);
   draw_background(fade);
 
-  cairo_surface_destroy(priv->fading_surface);
-  priv->fading_surface = NULL;
-
-  cairo_surface_destroy(priv->end_surface);
-  priv->end_surface = NULL;
+  g_clear_pointer(&priv->fading_surface, cairo_surface_destroy);
+  g_clear_pointer(&priv->end_surface, cairo_surface_destroy);
 
   g_assert(priv->start_surface != NULL);
 
-  cairo_surface_destroy(priv->start_surface);
-  priv->start_surface = NULL;
+  g_clear_pointer(&priv->start_surface, cairo_surface_destroy);
 
   if (priv->widget != NULL) {
     g_signal_handlers_disconnect_by_func(priv->widget,
