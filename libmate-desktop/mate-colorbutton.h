@@ -32,6 +32,7 @@
 #ifndef __MATE_COLOR_BUTTON_H__
 #define __MATE_COLOR_BUTTON_H__
 
+#include <glib-object.h>
 #include <glib.h>
 #include <gtk/gtk.h>
 
@@ -44,30 +45,8 @@ G_BEGIN_DECLS
  */
 
 #define MATE_TYPE_COLOR_BUTTON (mate_color_button_get_type())
-#define MATE_COLOR_BUTTON(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj), MATE_TYPE_COLOR_BUTTON, MateColorButton))
-#define MATE_COLOR_BUTTON_CLASS(klass)                      \
-  (G_TYPE_CHECK_CLASS_CAST((klass), MATE_TYPE_COLOR_BUTTON, \
-                           MateColorButtonClass))
-#define MATE_IS_COLOR_BUTTON(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj), MATE_TYPE_COLOR_BUTTON))
-#define MATE_IS_COLOR_BUTTON_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass), MATE_TYPE_COLOR_BUTTON))
-#define MATE_COLOR_BUTTON_GET_CLASS(obj)                    \
-  (G_TYPE_INSTANCE_GET_CLASS((obj), MATE_TYPE_COLOR_BUTTON, \
-                             MateColorButtonClass))
-
-typedef struct _MateColorButton MateColorButton;
-typedef struct _MateColorButtonClass MateColorButtonClass;
-typedef struct _MateColorButtonPrivate MateColorButtonPrivate;
-
-struct _MateColorButton {
-  GtkButton button;
-
-  /*< private >*/
-
-  MateColorButtonPrivate *priv;
-};
+G_DECLARE_DERIVABLE_TYPE(MateColorButton, mate_color_button, MATE, COLOR_BUTTON,
+                         GtkButton)
 
 struct _MateColorButtonClass {
   GtkButtonClass parent_class;
@@ -81,7 +60,6 @@ struct _MateColorButtonClass {
   void (*_gtk_reserved4)(void);
 };
 
-GType mate_color_button_get_type(void) G_GNUC_CONST;
 GtkWidget *mate_color_button_new(void);
 GtkWidget *mate_color_button_new_with_color(const GdkColor *color);
 void mate_color_button_set_color(MateColorButton *color_button,
