@@ -35,35 +35,13 @@
 G_BEGIN_DECLS
 
 #define MATE_TYPE_COLOR_SELECTION (mate_color_selection_get_type())
-#define MATE_COLOR_SELECTION(obj)                               \
-  (G_TYPE_CHECK_INSTANCE_CAST((obj), MATE_TYPE_COLOR_SELECTION, \
-                              MateColorSelection))
-#define MATE_COLOR_SELECTION_CLASS(klass)                      \
-  (G_TYPE_CHECK_CLASS_CAST((klass), MATE_TYPE_COLOR_SELECTION, \
-                           MateColorSelectionClass))
-#define MATE_IS_COLOR_SELECTION(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE((obj), MATE_TYPE_COLOR_SELECTION))
-#define MATE_IS_COLOR_SELECTION_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE((klass), MATE_TYPE_COLOR_SELECTION))
-#define MATE_COLOR_SELECTION_GET_CLASS(obj)                    \
-  (G_TYPE_INSTANCE_GET_CLASS((obj), MATE_TYPE_COLOR_SELECTION, \
-                             MateColorSelectionClass))
-
-typedef struct _MateColorSelection MateColorSelection;
-typedef struct _MateColorSelectionClass MateColorSelectionClass;
-typedef struct _MateColorSelectionPrivate MateColorSelectionPrivate;
+G_DECLARE_DERIVABLE_TYPE(MateColorSelection, mate_color_selection, MATE,
+                         COLOR_SELECTION, GtkBox)
 
 typedef void (*MateColorSelectionChangePaletteFunc)(const GdkColor *colors,
                                                     gint n_colors);
 typedef void (*MateColorSelectionChangePaletteWithScreenFunc)(
     GdkScreen *screen, const GdkColor *colors, gint n_colors);
-
-struct _MateColorSelection {
-  GtkBox parent_instance;
-
-  /* < private_data > */
-  MateColorSelectionPrivate *private_data;
-};
 
 struct _MateColorSelectionClass {
   GtkBoxClass parent_class;
@@ -79,7 +57,6 @@ struct _MateColorSelectionClass {
 
 /* ColorSelection */
 
-GType mate_color_selection_get_type(void) G_GNUC_CONST;
 GtkWidget *mate_color_selection_new(void);
 gboolean mate_color_selection_get_has_opacity_control(
     MateColorSelection *colorsel);
@@ -117,8 +94,8 @@ gchar *mate_color_selection_palette_to_string(const GdkColor *colors,
 MateColorSelectionChangePaletteFunc
 mate_color_selection_set_change_palette_hook(
     MateColorSelectionChangePaletteFunc func);
-#endif
-#endif
+#endif /* ! GDK_MULTIHEAD_SAFE */
+#endif /* ! GTK_DISABLE_DEPRECATED */
 
 MateColorSelectionChangePaletteWithScreenFunc
 mate_color_selection_set_change_palette_with_screen_hook(
@@ -130,7 +107,7 @@ void mate_color_selection_set_color(MateColorSelection *colorsel,
                                     gdouble *color);
 void mate_color_selection_get_color(MateColorSelection *colorsel,
                                     gdouble *color);
-#endif /* GTK_DISABLE_DEPRECATED */
+#endif /* ! GTK_DISABLE_DEPRECATED */
 
 G_END_DECLS
 
