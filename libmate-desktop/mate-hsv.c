@@ -64,7 +64,7 @@
 typedef enum { DRAG_NONE, DRAG_H, DRAG_SV } DragMode;
 
 /* Private part of the MateHSV structure */
-struct _MateHSVPrivate {
+typedef struct {
   /* Color value */
   double h;
   double s;
@@ -81,7 +81,7 @@ struct _MateHSVPrivate {
   DragMode mode;
 
   guint focus_on_ring : 1;
-};
+} MateHSVPrivate;
 
 /* Signal IDs */
 
@@ -170,16 +170,14 @@ static void mate_hsv_class_init(MateHSVClass *class) {
 static void mate_hsv_init(MateHSV *hsv) {
   MateHSVPrivate *priv;
 
-  priv = mate_hsv_get_instance_private(hsv);
-  hsv->priv = priv;
-
   gtk_widget_set_has_window(GTK_WIDGET(hsv), FALSE);
   gtk_widget_set_can_focus(GTK_WIDGET(hsv), TRUE);
+
+  priv = mate_hsv_get_instance_private(hsv);
 
   priv->h = 0.0;
   priv->s = 0.0;
   priv->v = 0.0;
-
   priv->size = DEFAULT_SIZE;
   priv->ring_width = DEFAULT_RING_WIDTH;
 }
@@ -190,7 +188,7 @@ static void mate_hsv_destroy(GtkWidget *widget) {
 
 static void mate_hsv_realize(GtkWidget *widget) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   GtkAllocation allocation;
   GdkWindow *parent_window;
   GdkWindowAttr attr;
@@ -223,7 +221,7 @@ static void mate_hsv_realize(GtkWidget *widget) {
 
 static void mate_hsv_unrealize(GtkWidget *widget) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
 
   gdk_window_set_user_data(priv->window, NULL);
   gdk_window_destroy(priv->window);
@@ -235,7 +233,7 @@ static void mate_hsv_unrealize(GtkWidget *widget) {
 static void mate_hsv_get_preferred_width(GtkWidget *widget, gint *minimum,
                                          gint *natural) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   gint focus_width;
   gint focus_pad;
 
@@ -249,7 +247,7 @@ static void mate_hsv_get_preferred_width(GtkWidget *widget, gint *minimum,
 static void mate_hsv_get_preferred_height(GtkWidget *widget, gint *minimum,
                                           gint *natural) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   gint focus_width;
   gint focus_pad;
 
@@ -263,7 +261,7 @@ static void mate_hsv_get_preferred_height(GtkWidget *widget, gint *minimum,
 static void mate_hsv_size_allocate(GtkWidget *widget,
                                    GtkAllocation *allocation) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
 
   gtk_widget_set_allocation(widget, allocation);
 
@@ -343,7 +341,7 @@ static void hsv_to_rgb(gdouble *h, gdouble *s, gdouble *v) {
 /* Computes the vertices of the saturation/value triangle */
 static void compute_triangle(MateHSV *hsv, gint *hx, gint *hy, gint *sx,
                              gint *sy, gint *vx, gint *vy) {
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   GtkWidget *widget = GTK_WIDGET(hsv);
   gdouble center_x;
   gdouble center_y;
@@ -366,7 +364,7 @@ static void compute_triangle(MateHSV *hsv, gint *hx, gint *hy, gint *sx,
 
 /* Computes whether a point is inside the hue ring */
 static gboolean is_in_ring(MateHSV *hsv, gdouble x, gdouble y) {
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   GtkWidget *widget = GTK_WIDGET(hsv);
   gdouble dx, dy, dist;
   gdouble center_x;
@@ -493,7 +491,7 @@ static double compute_v(MateHSV *hsv, gdouble x, gdouble y) {
 /* Event handlers */
 
 static void set_cross_grab(MateHSV *hsv, GdkDevice *device, guint32 time) {
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   GdkCursor *cursor;
 
   cursor = gdk_cursor_new_for_display(gtk_widget_get_display(GTK_WIDGET(hsv)),
@@ -507,7 +505,7 @@ static void set_cross_grab(MateHSV *hsv, GdkDevice *device, guint32 time) {
 static gboolean mate_hsv_grab_broken(GtkWidget *widget,
                                      GdkEventGrabBroken *event) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
 
   priv->mode = DRAG_NONE;
 
@@ -516,7 +514,7 @@ static gboolean mate_hsv_grab_broken(GtkWidget *widget,
 
 static gint mate_hsv_button_press(GtkWidget *widget, GdkEventButton *event) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   double x, y;
 
   if (priv->mode != DRAG_NONE || event->button != GDK_BUTTON_PRIMARY)
@@ -557,7 +555,7 @@ static gint mate_hsv_button_press(GtkWidget *widget, GdkEventButton *event) {
 
 static gint mate_hsv_button_release(GtkWidget *widget, GdkEventButton *event) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   DragMode mode;
   gdouble x, y;
 
@@ -591,7 +589,7 @@ static gint mate_hsv_button_release(GtkWidget *widget, GdkEventButton *event) {
 
 static gint mate_hsv_motion(GtkWidget *widget, GdkEventMotion *event) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   gdouble x, y;
 
   if (priv->mode == DRAG_NONE) return FALSE;
@@ -620,7 +618,7 @@ static gint mate_hsv_motion(GtkWidget *widget, GdkEventMotion *event) {
 
 /* Paints the hue ring */
 static void paint_ring(MateHSV *hsv, cairo_t *cr) {
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   GtkWidget *widget = GTK_WIDGET(hsv);
   int xx, yy, width, height;
   gdouble dx, dy, dist;
@@ -745,7 +743,7 @@ static void get_color(gdouble h, gdouble s, gdouble v, gint *r, gint *g,
 
 /* Paints the HSV triangle */
 static void paint_triangle(MateHSV *hsv, cairo_t *cr, gboolean draw_focus) {
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   GtkWidget *widget = GTK_WIDGET(hsv);
   gint hx, hy, sx, sy, vx, vy; /* HSV vertices */
   gint x1, y1, r1, g1, b1;     /* First vertex in scanline order */
@@ -931,7 +929,7 @@ static void paint_triangle(MateHSV *hsv, cairo_t *cr, gboolean draw_focus) {
 /* Paints the contents of the HSV color selector */
 static gboolean mate_hsv_draw(GtkWidget *widget, cairo_t *cr) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   gboolean draw_focus;
 
   draw_focus = gtk_widget_has_visible_focus(widget);
@@ -953,7 +951,7 @@ static gboolean mate_hsv_draw(GtkWidget *widget, cairo_t *cr) {
 
 static gboolean mate_hsv_focus(GtkWidget *widget, GtkDirectionType dir) {
   MateHSV *hsv = MATE_HSV(widget);
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
 
   if (!gtk_widget_has_focus(widget)) {
     if (dir == GTK_DIR_TAB_BACKWARD)
@@ -1029,7 +1027,7 @@ void mate_hsv_set_color(MateHSV *hsv, gdouble h, gdouble s, gdouble v) {
   g_return_if_fail(s >= 0.0 && s <= 1.0);
   g_return_if_fail(v >= 0.0 && v <= 1.0);
 
-  priv = hsv->priv;
+  priv = mate_hsv_get_instance_private(hsv);
 
   priv->h = h;
   priv->s = s;
@@ -1055,7 +1053,7 @@ void mate_hsv_get_color(MateHSV *hsv, double *h, double *s, double *v) {
 
   g_return_if_fail(MATE_IS_HSV(hsv));
 
-  priv = hsv->priv;
+  priv = mate_hsv_get_instance_private(hsv);
 
   if (h) *h = priv->h;
 
@@ -1081,7 +1079,7 @@ void mate_hsv_set_metrics(MateHSV *hsv, gint size, gint ring_width) {
   g_return_if_fail(ring_width > 0);
   g_return_if_fail(2 * ring_width + 1 <= size);
 
-  priv = hsv->priv;
+  priv = mate_hsv_get_instance_private(hsv);
 
   same_size = (priv->size == size);
 
@@ -1107,7 +1105,7 @@ void mate_hsv_get_metrics(MateHSV *hsv, gint *size, gint *ring_width) {
 
   g_return_if_fail(MATE_IS_HSV(hsv));
 
-  priv = hsv->priv;
+  priv = mate_hsv_get_instance_private(hsv);
 
   if (size) *size = priv->size;
 
@@ -1132,13 +1130,13 @@ gboolean mate_hsv_is_adjusting(MateHSV *hsv) {
 
   g_return_val_if_fail(MATE_IS_HSV(hsv), FALSE);
 
-  priv = hsv->priv;
+  priv = mate_hsv_get_instance_private(hsv);
 
   return priv->mode != DRAG_NONE;
 }
 
 static void mate_hsv_move(MateHSV *hsv, GtkDirectionType dir) {
-  MateHSVPrivate *priv = hsv->priv;
+  MateHSVPrivate *priv = mate_hsv_get_instance_private(hsv);
   gdouble hue, sat, val;
   gint hx, hy, sx, sy, vx, vy; /* HSV vertices */
   gint x, y;                   /* position in triangle */
