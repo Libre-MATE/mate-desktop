@@ -33,6 +33,8 @@
 #ifndef __MATE_HSV_H__
 #define __MATE_HSV_H__
 
+#include <glib-object.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 
 G_BEGIN_DECLS

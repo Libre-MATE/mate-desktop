@@ -30,6 +30,7 @@
 #endif
 
 #include <gdk/gdk.h>
+#include <glib-object.h>
 #include <glib.h>
 #include <gtk/gtk.h>
 
@@ -59,4 +60,4 @@ void mate_bg_crossfade_stop(MateBGCrossfade *fade);
 
 G_END_DECLS
 
-#endif
+#endif /* __MATE_BG_CROSSFADE_H__ */

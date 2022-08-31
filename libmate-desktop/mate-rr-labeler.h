@@ -30,6 +30,8 @@
 #error    MateRR is unstable API. You must define MATE_DESKTOP_USE_UNSTABLE_API before including materr.h
 #endif
 
+#include <glib-object.h>
+#include <glib.h>
 #include "mate-rr-config.h"
 
 #define MATE_TYPE_RR_LABELER (mate_rr_labeler_get_type())

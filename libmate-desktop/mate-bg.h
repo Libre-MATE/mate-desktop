@@ -34,6 +34,7 @@
 
 #include <gdk/gdk.h>
 #include <gio/gio.h>
+#include <glib-object.h>
 #include <glib.h>
 
 #include "mate-bg-crossfade.h"
@@ -147,4 +148,4 @@ cairo_surface_t *mate_bg_get_surface_from_root(GdkScreen *screen);
 
 G_END_DECLS
 
-#endif
+#endif /* __MATE_BG_H__ */
