@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include <libmate-desktop/mate-colorsel.h>
 #include <libmate-desktop/mate-colorseldialog.h>
+#include <stdlib.h>
 
 static gboolean copy_color(GtkWidget *widget, GdkEvent *event,
                            MateColorSelectionDialog *color_dialog) {
@@ -92,5 +93,6 @@ int main(int argc, char **argv) {
 
   /* start application */
   gtk_main();
-  return 0;
+
+  return EXIT_SUCCESS;
 }
