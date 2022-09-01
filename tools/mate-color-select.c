@@ -28,6 +28,11 @@
 #endif
 
 #include <glib/gi18n.h>
+#ifdef ENABLE_NLS
+#include <locale.h>
+#endif /* ENABLE_NLS */
+#include <glib-object.h>
+#include <glib.h>
 #include <gtk/gtk.h>
 #include <libmate-desktop/mate-colorsel.h>
 #include <libmate-desktop/mate-colorseldialog.h>
@@ -55,9 +60,12 @@ int main(int argc, char **argv) {
   GtkWidget *widget;
   GtkWidget *image;
 
+#ifdef ENABLE_NLS
+  setlocale (LC_ALL, "");
   bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
   bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
   textdomain(GETTEXT_PACKAGE);
+#endif /* ENABLE_NLS */
 
   /* initialize GTK+ */
   gtk_init(&argc, &argv);
