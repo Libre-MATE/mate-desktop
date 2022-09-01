@@ -18,7 +18,19 @@
  * 02110-1301, USA.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include "mate-about.h"
+
+#include <glib/gi18n.h>
+#ifdef ENABLE_NLS
+#include <locale.h>
+#endif /* ENABLE_NLS */
+#include <glib-object.h>
+#include <glib.h>
+#include <gtk/gtk.h>
 
 static void mate_about_on_activate(GtkApplication* app) {
   GList* list;
@@ -75,9 +87,12 @@ void mate_about_run(void) {
 int main(int argc, char** argv) {
   int status = 0;
 
+#ifdef ENABLE_NLS
+  setlocale (LC_ALL, "");
   bindtextdomain(GETTEXT_PACKAGE, LOCALE_DIR);
   bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
   textdomain(GETTEXT_PACKAGE);
+#endif /* ENABLE_NLS */
 
   GOptionContext* context = g_option_context_new(NULL);
   g_option_context_add_main_entries(context, command_entries, GETTEXT_PACKAGE);
