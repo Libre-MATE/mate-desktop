@@ -190,15 +190,17 @@ gboolean mate_gdk_spawn_command_line_on_screen(GdkScreen *screen,
 }
 
 void _mate_desktop_init_i18n(void) {
-  static gboolean initialized = FALSE;
+#ifdef ENABLE_NLS
+  static gsize initialization_value = 0;
 
-  if (!initialized) {
+  if (g_once_init_enter (&initialization_value))
     bindtextdomain(GETTEXT_PACKAGE, MATELOCALEDIR);
 #ifdef HAVE_BIND_TEXTDOMAIN_CODESET
     bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-#endif
-    initialized = TRUE;
+#endif /* HAVE_BIND_TEXTDOMAIN_CODESET */
+    g_once_init_leave (&initialization_value, TRUE);
   }
+#endif /* ENABLE_NLS */
 }
 
 /**
